@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae98c1bf50aae4348a61a915f3ac49c5, type: 3}
+  m_Name: FundamentalShapes_LevelData_4
+  m_EditorClassIdentifier: 
+  world: 0
+  worldLevelNumber: 4
+  levelBoardObject: {fileID: 0}
+  holeData: {fileID: 11400000, guid: e63bfad11dbb0d7408be597f1f1dddb7, type: 2}
+  shapeDataList:
+  - {fileID: 11400000, guid: 7c5dde81b713cf146a3aada35e008a8a, type: 2}
+  - {fileID: 11400000, guid: 0a646a10221b4704fa84fdb9a82a9957, type: 2}
+  levelGoals:
+  - goalType: 0
+    description: 
+    isCompleted: 0
+    shapeLimit: 0
+    cropLimit: 0

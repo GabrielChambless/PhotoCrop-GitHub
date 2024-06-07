@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1241716373970389435
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1399542446564451839}
+  - component: {fileID: 117421393540261407}
+  m_Layer: 0
+  m_Name: ShapeSelectionController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1399542446564451839
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1241716373970389435}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1298614690330114442}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &117421393540261407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1241716373970389435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba5c1fc9a269524a8ba18969d3b2623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shapePhotoObject: {fileID: 8449703349948774947, guid: f2fe1daf34521ea4cab51b508be244a4,
+    type: 3}
+  distanceToLerp: 2
+  lerpDuration: 0.2
+  originalOffset: 0.2
+--- !u!1 &2023695715423229191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1298614690330114442}
+  - component: {fileID: 431125169648461723}
+  m_Layer: 0
+  m_Name: LevelController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1298614690330114442
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023695715423229191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1399542446564451839}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &431125169648461723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023695715423229191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa35e179b5ddd554e8f1394c6483670b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cropControllerPrefab: {fileID: 999915296758531036, guid: fabdb9b1745b0ef479646ad33f555c55,
+    type: 3}
+  tickManagerPrefab: {fileID: 2759092056959370932, guid: 950c3efa3479fb14d9ecf970d3b17195,
+    type: 3}
+  cellObjectPrefab: {fileID: 5730871099180204512, guid: 2bc9285f4a8e13841a1510172d6c0059,
+    type: 3}
+  levelGridPrefab: {fileID: 6653705820049210993, guid: 8b006ff4b042d6242b4091bc37a5b853,
+    type: 3}
+  fogPlanePrefab: {fileID: 4456431463347985450, guid: 3c76b805307044d468cabeb0c59fe895,
+    type: 3}
+  moveSpeed: 0.5
+  snapThreshold: 0.2
+  bounceIntensity: 0.3
+  placeSpeed: 0.7
+  placeBounceIntensity: 0.4
+  rotateBounceIntensity: 0.1
+  IsSettingUpLevel: 0
+  LevelIsCompleted: 0

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2993cbf0f4f82af47bf3a751682e6f70, type: 3}
+  m_Name: Pawn 1
+  m_EditorClassIdentifier: 
+  entityObject: {fileID: 2137027274865235529, guid: dc348d9cf75e060498f0c25645ee7167,
+    type: 3}
+  entityType: 1
+  entityGroupType: 0
+  directionsCanMove: 0000000003000000
+  movementRange: 1
+  canSharePosition: 0
+  tickType: 1
+  tickOrder: 0
+  tickActionType: 0
+  tickActionTargetType: 0
+  tickActionManualTarget: {x: 0, y: 0}

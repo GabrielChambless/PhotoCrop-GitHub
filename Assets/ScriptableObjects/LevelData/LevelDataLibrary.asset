@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b69a5c65407a94eb179815bde82f73, type: 3}
+  m_Name: LevelDataLibrary
+  m_EditorClassIdentifier: 
+  FundamentalShapesLevelData:
+  - {fileID: 11400000, guid: 0d66a3ccfd5e3ba4d95087e226238c67, type: 2}
+  - {fileID: 11400000, guid: e564e8a3f1a8b1149862fb5b039e5e05, type: 2}
+  - {fileID: 11400000, guid: a571b8227cfe5ba4b9a3affbe20f9941, type: 2}
+  - {fileID: 11400000, guid: 5fac5c6de41f4094ebfb0c28672c597b, type: 2}
+  - {fileID: 11400000, guid: 93ba07bdb066fa44cabd477d1efbd168, type: 2}
+  - {fileID: 11400000, guid: 6531b9c59a44eea4f82efe1c20f0cbb2, type: 2}
+  - {fileID: 11400000, guid: 58e806a82b16c8649ac9ca18aefb39bf, type: 2}
+  - {fileID: 11400000, guid: 343f85d9e99c0af4999bbb78c4977061, type: 2}
+  - {fileID: 11400000, guid: aa66013bc11c25d47a9c4adef793e501, type: 2}
+  - {fileID: 11400000, guid: edb2e013b96790045a16613b0a3918ff, type: 2}
+  ChessLevelData: []
