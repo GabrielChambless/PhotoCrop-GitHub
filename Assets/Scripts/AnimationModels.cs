@@ -5,6 +5,13 @@ public static class AnimationModels
 {
     private static float bounceOffset = 0.25f;
 
+    private static float moveSpeed = 25f;
+    private static float snapThreshold = 0.2f;
+    private static float bounceIntensity = 0.3f;
+
+    private static float placeSpeed = 0.7f;
+    private static float placeBounceIntensity = 0.4f;
+
     public static IEnumerator DropHoleCells(GameObject holeObject, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
     {
         Vector3 offset = Vector3.forward * -15f;
@@ -104,6 +111,38 @@ public static class AnimationModels
 
         levelGridMaterial.SetFloat("_Transparency", endTransparency);
         levelGridMaterial.color = startColor;
+    }
+
+    public static IEnumerator MoveSnap(Transform objectTransform, Vector3 targetPos)
+    {
+        // Continue moving towards the target position until close enough
+        while (Vector3.Distance(objectTransform.position, targetPos) > snapThreshold)
+        {
+            objectTransform.position = Vector3.Lerp(objectTransform.position, targetPos, (moveSpeed + 5) * Time.deltaTime);
+            yield return null; // Wait for the next frame
+        }
+
+        // Calculate the overshoot position
+        Vector3 overshootPos = targetPos + (targetPos - objectTransform.position).normalized * bounceIntensity;
+        float bounceTime = 0;
+
+        while (bounceTime < 1f)
+        {
+            objectTransform.position = Vector3.Lerp(objectTransform.position, overshootPos, bounceTime);
+            bounceTime += (moveSpeed + 5) * Time.deltaTime;
+            yield return null;
+        }
+
+        // Settle back to the target position
+        bounceTime = 0;
+        while (bounceTime < 1f)
+        {
+            objectTransform.position = Vector3.Lerp(objectTransform.position, targetPos, bounceTime);
+            bounceTime += (moveSpeed + 5) * Time.deltaTime;
+            yield return null;
+        }
+
+        objectTransform.position = targetPos;
     }
 
     public static IEnumerator SetChessBoard(GameObject chessBoard, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)

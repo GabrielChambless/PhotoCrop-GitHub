@@ -21,7 +21,8 @@ public class CellEntity
     public GameObject EntityObject;
     public System.Func<CellEntity, IEnumerator> TickAction;
     public bool CanPerformTickAction;
-    public int NumberOfTimesTickActionPerformed;
+    public int NumberOfTickActionsPerformed;
+    public int NumberOfTickActionsFailed;
 
     public Vector2Int Position;
     public List<Vector2Int> TargetPositions;

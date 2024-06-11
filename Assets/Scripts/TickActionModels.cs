@@ -38,10 +38,14 @@ public class TickActionModels : MonoBehaviour
 
     private static IEnumerator MoveToTarget(CellEntity cellEntity)
     {
+        cellEntity.NumberOfTickActionsPerformed++;
+
         Dictionary<CellEntity, (List<Vector2Int>, bool)> entityPaths = new Dictionary<CellEntity, (List<Vector2Int>, bool)>();
 
         // Selected target to move towards
         (CellEntity selectedTarget, List<Vector2Int> shortestPath, bool foundUnblockedPath) = (null, null, false);
+
+        Vector2Int targetPosition = cellEntity.TickActionManualTarget;
 
         switch (cellEntity.TickActionTargetType)
         {
@@ -80,7 +84,6 @@ public class TickActionModels : MonoBehaviour
 
                 break;
             case TickActionTargetTypes.Manual:
-                Vector2Int targetPosition = cellEntity.TickActionManualTarget;
                 (List<Vector2Int>, bool) pathToTarget = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, targetPosition, cellEntity.CellTypesCanMoveOn);
 
                 selectedTarget = null;
@@ -137,29 +140,49 @@ public class TickActionModels : MonoBehaviour
                 if (selectedTarget != null)
                 {
                     Debug.Log($"Selected target: {selectedTarget.Position} with path length: {shortestPath.Count}");
+
+                    for (int i = 0; i < cellEntity.MovementRange; i++)
+                    {
+                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
+                        cellEntity.Position = shortestPath[i];
+                    }
                 }
                 else
                 {
                     Debug.Log("No valid target found.");
                 }
+
+                if (cellEntity.Position == selectedTarget.Position)
+                {
+                    Debug.Log("The CellEntity has reached its target position.");
+                    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+                }
                 break;
             case TickActionTargetTypes.Manual:
+                if (shortestPath != null)
+                {
+                    Debug.Log($"Target position: {targetPosition} with path length: {shortestPath.Count}");
+
+                    for (int i = 0; i < cellEntity.MovementRange; i++)
+                    {
+                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
+                        cellEntity.Position = shortestPath[i];
+                    }
+                }
+
+                if (cellEntity.Position == targetPosition)
+                {
+                    Debug.Log("The CellEntity has reached its target position.");
+                    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+                }
                 break;
         }
-
-        // TODO; set up amation which yields the return
-        yield return null;
 
         // movement range
         // if reached target, unsubscribe
 
-        cellEntity.NumberOfTimesTickActionPerformed++;
-
-        if (cellEntity.NumberOfTimesTickActionPerformed > 2)
-        {
-            TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
-            Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
-        }
     }
 
 
@@ -301,7 +324,7 @@ public class TickActionModels : MonoBehaviour
             step = cameFrom[step];
         }
 
-        path.Add(cellEntity.Position);  // Add the starting position
+        //path.Add(cellEntity.Position);  // Add the starting position
         path.Reverse();
 
         return (path, isUnblocked);
