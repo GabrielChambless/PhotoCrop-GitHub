@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class CellEntity
     public CellEntityData.EntityTypes EntityType;
     public CellEntityData.EntityGoupTypes EntityGroupType;
     public List<GameStats.DirectionTypes> DirectionsCanMove = new List<GameStats.DirectionTypes>();
+    public List<GameStats.CellContentTypes> CellTypesCanMoveOn = new List<GameStats.CellContentTypes>();
     public int MovementRange;
     public bool CanSharePosition;
     public TickManager.TickTypes TickType;
@@ -17,7 +19,7 @@ public class CellEntity
     public Vector2Int TickActionManualTarget;
 
     public GameObject EntityObject;
-    public System.Action<CellEntity> TickAction;
+    public System.Func<CellEntity, IEnumerator> TickAction;
     public bool CanPerformTickAction;
     public int NumberOfTimesTickActionPerformed;
 
@@ -30,6 +32,7 @@ public class CellEntity
         EntityType = cellEntityData.EntityType;
         EntityGroupType = cellEntityData.EntityGoupType;
         DirectionsCanMove = new List<GameStats.DirectionTypes>(cellEntityData.DirectionTypesCanMove);
+        CellTypesCanMoveOn = new List<GameStats.CellContentTypes>(cellEntityData.CellTypesCanMoveOn);
         MovementRange = cellEntityData.MovementRange;
         CanSharePosition = cellEntityData.CanSharePosition;
         TickType = cellEntityData.TickType;

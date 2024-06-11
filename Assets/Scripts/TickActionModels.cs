@@ -19,6 +19,7 @@ public class TickActionModels : MonoBehaviour
         Manual
     }
 
+
     public static void AssignEntityTickAction(CellEntity cellEntity)
     {
         if (cellEntity == null)
@@ -35,15 +36,125 @@ public class TickActionModels : MonoBehaviour
         }
     }
 
-    private static void MoveToTarget(CellEntity cellEntity)
+    private static IEnumerator MoveToTarget(CellEntity cellEntity)
     {
-        Debug.Log($"Entity at: {cellEntity.Position} Move to target");
-        cellEntity.NumberOfTimesTickActionPerformed++;
-        // determine target
-        // calculate path
-        // movement range
+        Dictionary<CellEntity, (List<Vector2Int>, bool)> entityPaths = new Dictionary<CellEntity, (List<Vector2Int>, bool)>();
 
+        // Selected target to move towards
+        (CellEntity selectedTarget, List<Vector2Int> shortestPath, bool foundUnblockedPath) = (null, null, false);
+
+        switch (cellEntity.TickActionTargetType)
+        {
+            case TickActionTargetTypes.NotSameGroupEntity:
+                foreach (CellEntity entity in LevelController.Instance.CellEntities)
+                {
+                    if (entity.EntityGroupType != cellEntity.EntityGroupType)
+                    {
+                        (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
+                        entityPaths.Add(entity, pathToEntity);
+                    }
+                }
+
+                break;
+            case TickActionTargetTypes.SameGroupEntity:
+                foreach (CellEntity entity in LevelController.Instance.CellEntities)
+                {
+                    if (entity.EntityGroupType == cellEntity.EntityGroupType)
+                    {
+                        (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
+                        entityPaths.Add(entity, pathToEntity);
+                    }
+                }
+
+                break;
+            case TickActionTargetTypes.RandomEntity:
+                foreach (CellEntity entity in LevelController.Instance.CellEntities)
+                {
+                    (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
+
+                    if (pathToEntity.Item2)
+                    {
+                        entityPaths.Add(entity, pathToEntity);
+                    }
+                }
+
+                break;
+            case TickActionTargetTypes.Manual:
+                Vector2Int targetPosition = cellEntity.TickActionManualTarget;
+                (List<Vector2Int>, bool) pathToTarget = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, targetPosition, cellEntity.CellTypesCanMoveOn);
+
+                selectedTarget = null;
+                shortestPath = pathToTarget.Item1;
+                foundUnblockedPath = pathToTarget.Item2;
+
+                break;
+        }
+
+        if (cellEntity.TickActionTargetType == TickActionTargetTypes.NotSameGroupEntity || cellEntity.TickActionTargetType == TickActionTargetTypes.SameGroupEntity)
+        {
+            foreach (KeyValuePair<CellEntity, (List<Vector2Int>, bool)> kvp in entityPaths)
+            {
+                (CellEntity entity, List<Vector2Int> path, bool isUnblocked) = (kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
+
+                if (isUnblocked && (shortestPath == null || path.Count < shortestPath.Count))
+                {
+                    selectedTarget = entity;
+                    shortestPath = path;
+                    foundUnblockedPath = true;
+                }
+                else if (!foundUnblockedPath && (shortestPath == null || path.Count < shortestPath.Count))
+                {
+                    selectedTarget = entity;
+                    shortestPath = path;
+                }
+            }
+        }
+        else if (cellEntity.TickActionTargetType == TickActionTargetTypes.RandomEntity)
+        {
+            if (entityPaths.Count > 0)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, entityPaths.Count);
+
+                selectedTarget = entityPaths.ElementAt(randomIndex).Key;
+                shortestPath = entityPaths.ElementAt(randomIndex).Value.Item1;
+                foundUnblockedPath = entityPaths.ElementAt(randomIndex).Value.Item2;
+            }
+            else if (LevelController.Instance.CellEntities.Count > 0)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, LevelController.Instance.CellEntities.Count);
+
+                selectedTarget = LevelController.Instance.CellEntities.ElementAt(randomIndex);
+                shortestPath = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, selectedTarget.Position, cellEntity.CellTypesCanMoveOn).path;
+                foundUnblockedPath = false;
+            }
+        }
+
+        switch (cellEntity.TickActionTargetType)
+        {
+            case TickActionTargetTypes.NotSameGroupEntity:
+            case TickActionTargetTypes.SameGroupEntity:
+            case TickActionTargetTypes.RandomEntity:
+                if (selectedTarget != null)
+                {
+                    Debug.Log($"Selected target: {selectedTarget.Position} with path length: {shortestPath.Count}");
+                }
+                else
+                {
+                    Debug.Log("No valid target found.");
+                }
+                break;
+            case TickActionTargetTypes.Manual:
+                break;
+        }
+
+        // TODO; set up amation which yields the return
+        yield return null;
+
+        // movement range
         // if reached target, unsubscribe
+
+        cellEntity.NumberOfTimesTickActionPerformed++;
+
         if (cellEntity.NumberOfTimesTickActionPerformed > 2)
         {
             TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
@@ -63,7 +174,7 @@ public class TickActionModels : MonoBehaviour
         // move rival piece at index of tracker along path, with the path target being the player pawn piece
         // for loop end
 
-        playerPawn.CurrentPath = CalculatePathToTarget(LevelController.Instance.CurrentHole, playerPawn, new Vector2Int(playerPawn.Position.x, 6));
+        playerPawn.CurrentPath = CalculatePathToTarget(LevelController.Instance.CurrentHole, playerPawn, new Vector2Int(playerPawn.Position.x, 6)).path;
 
         while (playerPawn.CurrentPath.Count != 0)
         {
@@ -117,15 +228,18 @@ public class TickActionModels : MonoBehaviour
         return possibleMoves;
     }
 
-    public static List<Vector2Int> CalculatePathToTarget(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
+    public static (List<Vector2Int> path, bool isUnblocked) CalculatePathToTarget(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
     {
         Queue<(Vector2Int position, int indexTracker)> queue = new Queue<(Vector2Int position, int indexTracker)>();
         Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
         queue.Enqueue((cellEntity.Position, 0));
         cameFrom[cellEntity.Position] = cellEntity.Position;
+        visited.Add(cellEntity.Position);
 
         Vector2Int farthestReachable = cellEntity.Position;
+        bool isUnblocked = false;
 
         while (queue.Count > 0)
         {
@@ -134,6 +248,7 @@ public class TickActionModels : MonoBehaviour
             if (current == targetPosition)
             {
                 farthestReachable = current;
+                isUnblocked = true;
                 break;
             }
 
@@ -141,28 +256,27 @@ public class TickActionModels : MonoBehaviour
             {
                 Vector2Int next = current + GetDirectionVector(direction);
 
-                if (shouldAlternate && validContentTypes != null)
+                if (!visited.Contains(next))
                 {
-                    GameStats.CellContentTypes nextContentType = validContentTypes[indexTracker];
-
-                    if (IsPositionValid(hole, next, validContentTypes, nextContentType))
+                    if (shouldAlternate && validContentTypes != null)
                     {
-                        if (!cameFrom.ContainsKey(next))
+                        GameStats.CellContentTypes nextContentType = validContentTypes[indexTracker];
+
+                        if (IsPositionValid(hole, next, validContentTypes, nextContentType))
                         {
                             queue.Enqueue((next, (indexTracker + 1) % validContentTypes.Count));
                             cameFrom[next] = current;
+                            visited.Add(next);
                             farthestReachable = next;
                         }
                     }
-                }
-                else
-                {
-                    if (IsPositionValid(hole, next, validContentTypes))
+                    else
                     {
-                        if (!cameFrom.ContainsKey(next))
+                        if (IsPositionValid(hole, next, validContentTypes))
                         {
                             queue.Enqueue((next, indexTracker));
                             cameFrom[next] = current;
+                            visited.Add(next);
                             farthestReachable = next;
                         }
                     }
@@ -178,6 +292,7 @@ public class TickActionModels : MonoBehaviour
         {
             Debug.Log("Couldn't find a path to the target. Returning the path to the farthest reachable position.");
             step = farthestReachable;
+            isUnblocked = false;
         }
 
         while (step != cellEntity.Position)
@@ -186,17 +301,11 @@ public class TickActionModels : MonoBehaviour
             step = cameFrom[step];
         }
 
-        path.Add(cellEntity.Position);
+        path.Add(cellEntity.Position);  // Add the starting position
         path.Reverse();
 
-        foreach (var pos in path)
-        {
-            Debug.Log(pos);
-        }
-
-        return path;
+        return (path, isUnblocked);
     }
-
 
     public static List<Vector2Int> FindAdjacentCellsWithEntities(Hole hole, CellEntity cellEntity)
     {
@@ -280,12 +389,15 @@ public class TickActionModels : MonoBehaviour
     //    queue.Enqueue((cellEntity.Position, 0));
     //    cameFrom[cellEntity.Position] = cellEntity.Position;
 
+    //    Vector2Int farthestReachable = cellEntity.Position;
+
     //    while (queue.Count > 0)
     //    {
     //        var (current, indexTracker) = queue.Dequeue();
 
     //        if (current == targetPosition)
     //        {
+    //            farthestReachable = current;
     //            break;
     //        }
 
@@ -303,6 +415,7 @@ public class TickActionModels : MonoBehaviour
     //                    {
     //                        queue.Enqueue((next, (indexTracker + 1) % validContentTypes.Count));
     //                        cameFrom[next] = current;
+    //                        farthestReachable = next;
     //                    }
     //                }
     //            }
@@ -314,6 +427,7 @@ public class TickActionModels : MonoBehaviour
     //                    {
     //                        queue.Enqueue((next, indexTracker));
     //                        cameFrom[next] = current;
+    //                        farthestReachable = next;
     //                    }
     //                }
     //            }
@@ -323,10 +437,11 @@ public class TickActionModels : MonoBehaviour
     //    List<Vector2Int> path = new List<Vector2Int>();
     //    Vector2Int step = targetPosition;
 
+    //    // If the target position is not reachable, use the farthest reachable position
     //    if (!cameFrom.ContainsKey(step))
     //    {
-    //        Debug.Log("Couldn't find a path to the target!");
-    //        return path;
+    //        Debug.Log("Couldn't find a path to the target. Returning the path to the farthest reachable position.");
+    //        step = farthestReachable;
     //    }
 
     //    while (step != cellEntity.Position)
@@ -335,7 +450,14 @@ public class TickActionModels : MonoBehaviour
     //        step = cameFrom[step];
     //    }
 
+    //    path.Add(cellEntity.Position);
     //    path.Reverse();
+
+    //    foreach (var pos in path)
+    //    {
+    //        Debug.Log(pos);
+    //    }
+
     //    return path;
     //}
 }

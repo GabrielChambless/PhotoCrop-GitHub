@@ -22,6 +22,7 @@ public class CellEntityData : ScriptableObject
     [SerializeField] private EntityTypes entityType;
     [SerializeField] private EntityGoupTypes entityGroupType;
     [SerializeField] private List<GameStats.DirectionTypes> directionsCanMove = new List<GameStats.DirectionTypes>();
+    [SerializeField] private List<GameStats.CellContentTypes> cellTypesCanMoveOn = new List<GameStats.CellContentTypes>();
     [SerializeField] private int movementRange;
     [SerializeField] private bool canSharePosition;
 
@@ -35,6 +36,7 @@ public class CellEntityData : ScriptableObject
     public EntityTypes EntityType => entityType;
     public EntityGoupTypes EntityGoupType => entityGroupType;
     public List<GameStats.DirectionTypes> DirectionTypesCanMove => directionsCanMove;
+    public List<GameStats.CellContentTypes> CellTypesCanMoveOn => cellTypesCanMoveOn;
     public int MovementRange => movementRange;
     public bool CanSharePosition => canSharePosition;
 

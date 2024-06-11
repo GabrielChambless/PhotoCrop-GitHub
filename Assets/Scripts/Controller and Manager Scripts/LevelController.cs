@@ -23,9 +23,9 @@ public class LevelController : MonoBehaviour
     public bool LevelIsCompleted;
 
     public Hole CurrentHole { get; private set; }
+    public List<CellEntity> CellEntities { get; private set; } = new List<CellEntity>();
     private Shape currentShape;
     private List<Shape> availableShapes = new List<Shape>();
-    private List<CellEntity> cellEntities = new List<CellEntity>();
 
     private GameObject levelBoardObject;
     private GameObject fogPlaneObject;
@@ -216,13 +216,13 @@ public class LevelController : MonoBehaviour
 
     public void AddToCellEntities(CellEntity cellEntity)
     {
-        if (cellEntities.Contains(cellEntity))
+        if (CellEntities.Contains(cellEntity))
         {
             Debug.LogWarning("The cell entities list already contains this entity; returned early.");
             return;
         }
 
-        cellEntities.Add(cellEntity);
+        CellEntities.Add(cellEntity);
     }
 
     public void RestartLevel()
@@ -261,7 +261,7 @@ public class LevelController : MonoBehaviour
             yield break;
         }
 
-        foreach (CellEntity entity in cellEntities)
+        foreach (CellEntity entity in CellEntities)
         {
             TickActionModels.AssignEntityTickAction(entity);
             TickManager.Instance.Subscribe(entity, entity.TickAction, entity.TickOrder, entity.TickType);
