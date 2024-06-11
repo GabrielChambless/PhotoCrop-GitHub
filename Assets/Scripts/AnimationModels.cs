@@ -9,9 +9,6 @@ public static class AnimationModels
     private static float snapThreshold = 0.2f;
     private static float bounceIntensity = 0.3f;
 
-    private static float placeSpeed = 0.7f;
-    private static float placeBounceIntensity = 0.4f;
-
     public static IEnumerator DropHoleCells(GameObject holeObject, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
     {
         Vector3 offset = Vector3.forward * -15f;

@@ -143,6 +143,11 @@ public class TickActionModels : MonoBehaviour
 
                     for (int i = 0; i < cellEntity.MovementRange; i++)
                     {
+                        if (i > shortestPath.Count - 1)
+                        {
+                            break;
+                        }
+
                         yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
                         cellEntity.Position = shortestPath[i];
                     }
@@ -166,6 +171,11 @@ public class TickActionModels : MonoBehaviour
 
                     for (int i = 0; i < cellEntity.MovementRange; i++)
                     {
+                        if (i > shortestPath.Count - 1)
+                        {
+                            break;
+                        }
+
                         yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
                         cellEntity.Position = shortestPath[i];
                     }

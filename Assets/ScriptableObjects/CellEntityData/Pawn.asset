@@ -17,8 +17,8 @@ MonoBehaviour:
   entityType: 1
   entityGroupType: 0
   directionsCanMove: 0000000003000000
-  cellTypesCanMoveOn: 
-  movementRange: 1
+  cellTypesCanMoveOn: 01000000
+  movementRange: 3
   canSharePosition: 0
   tickType: 0
   tickOrder: 0

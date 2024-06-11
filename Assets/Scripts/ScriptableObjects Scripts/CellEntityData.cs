@@ -14,8 +14,10 @@ public class CellEntityData : ScriptableObject
     public enum EntityGoupTypes
     {
         Neutral,
-        PlayerGroup,
-        RivalGroup
+        PlayerGroupA,
+        PlayerGroupB,
+        RivalGroupA,
+        RivalGroupB
     }
 
     [SerializeField] private GameObject entityObject;

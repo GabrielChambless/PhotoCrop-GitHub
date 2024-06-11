@@ -16,7 +16,7 @@ public class TickManager : MonoBehaviour
     public static TickManager Instance { get; private set; }
 
     public Coroutine TickCoroutine { get; private set; }
-    public float tickDuration = 1f;
+    public float tickDuration = 0.5f;
     private int tickCounter;
 
     private List<TickSubscriber> priorityOrderSubscribers = new List<TickSubscriber>();

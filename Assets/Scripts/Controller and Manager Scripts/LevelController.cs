@@ -245,6 +245,14 @@ public class LevelController : MonoBehaviour
             levelBoardObject.transform.SetParent(currentHoleObject.transform);
         }
 
+        foreach (CellEntity entity in CellEntities)
+        {
+            if (entity.EntityObject != null)
+            {
+                entity.EntityObject.transform.SetParent(currentHoleObject.transform);
+            }
+        }
+
         GameStateManager.Instance.CurrentGameState = GameStateManager.GameStates.LevelRestarting;
 
         currentAnglePreference = CameraController.CameraAngles.Angle1;
