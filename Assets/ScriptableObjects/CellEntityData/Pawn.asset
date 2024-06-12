@@ -18,10 +18,10 @@ MonoBehaviour:
   entityGroupType: 1
   directionsCanMove: 00000000010000000200000003000000
   cellTypesCanMoveOn: 01000000
-  movementRange: 1
+  movementRange: 2
   canSharePosition: 0
   tickType: 1
   tickOrder: 0
   tickActionType: 1
-  tickActionTargetType: 1
+  tickActionTargetType: 3
   tickActionManualTarget: {x: 1, y: 3}

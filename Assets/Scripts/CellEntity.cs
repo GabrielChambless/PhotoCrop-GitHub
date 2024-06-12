@@ -12,6 +12,7 @@ public class CellEntity
     public List<GameStats.CellContentTypes> CellTypesCanMoveOn = new List<GameStats.CellContentTypes>();
     public int MovementRange;
     public bool CanSharePosition;
+    public bool CanBeRemovedByOtherEntities;
     public TickManager.TickTypes TickType;
     public int TickOrder;
     public TickActionModels.TickActionTypes TickActionType;
@@ -36,6 +37,7 @@ public class CellEntity
         CellTypesCanMoveOn = new List<GameStats.CellContentTypes>(cellEntityData.CellTypesCanMoveOn);
         MovementRange = cellEntityData.MovementRange;
         CanSharePosition = cellEntityData.CanSharePosition;
+        CanBeRemovedByOtherEntities = cellEntityData.CanBeRemovedByOtherEntities;
         TickType = cellEntityData.TickType;
         TickOrder = cellEntityData.TickOrder;
         TickActionType = cellEntityData.TickActionType;

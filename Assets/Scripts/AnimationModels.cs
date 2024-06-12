@@ -142,6 +142,114 @@ public static class AnimationModels
         objectTransform.position = targetPos;
     }
 
+    public static IEnumerator RotateAndFlyAway(GameObject obj, Vector2 direction, float duration = 0.25f, float flyDistance = 0.75f)
+    {
+        Vector3 startPosition = obj.transform.position;
+        Quaternion startRotation = obj.transform.rotation;
+
+        float elapsedTime = 0f;
+        Vector3 peakPosition = startPosition + new Vector3(direction.x, direction.y, -1f).normalized * flyDistance;
+        Vector3 endPosition = new Vector3(peakPosition.x, peakPosition.y, startPosition.z);
+
+        // Determine the target rotation based on the direction
+        Quaternion targetRotation;
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        {
+            // Rotate around Y-axis for horizontal direction
+            targetRotation = startRotation * Quaternion.Euler(0, direction.x > 0 ? -90 : 90, 0);
+        }
+        else
+        {
+            // Rotate around X-axis for vertical direction
+            targetRotation = startRotation * Quaternion.Euler(direction.y > 0 ? 90 : -90, 0, 0);
+        }
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+
+            if (t < 0.5f)
+            {
+                // First half: Fly towards peak position
+                float tHalf = t * 2;
+                obj.transform.position = Vector3.Lerp(startPosition, peakPosition, tHalf);
+            }
+            else
+            {
+                // Second half: Fly back to original Z position
+                float tHalf = (t - 0.5f) * 2;
+                obj.transform.position = Vector3.Lerp(peakPosition, endPosition, tHalf);
+            }
+
+            // Apply rotation towards the target rotation
+            obj.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the final position and rotation are set
+        obj.transform.position = endPosition;
+        obj.transform.rotation = targetRotation; // Final rotation should be 90 degrees in the specified direction
+    }
+
+    public static IEnumerator RandomRotateSnap(GameObject obj)
+    {
+        float rotateSpeed = 50f;
+        float tossUpHeight = 2f;
+        float startHeight = -0.75f;
+
+        float[] angleIncrements = { 0f, 90f, 180f, 270f };
+
+        bool isRotating = true;
+
+        Vector3 startPosition = obj.transform.position;
+        Vector3 endPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z - tossUpHeight);
+
+        Vector3 startEulerAngles = obj.transform.eulerAngles;
+
+        Vector3 endEulerAngles = new Vector3(startEulerAngles.x + angleIncrements[Random.Range(0, angleIncrements.Length)] + 180f, 
+            startEulerAngles.y + angleIncrements[Random.Range(0, angleIncrements.Length)] + 180f, startEulerAngles.z);
+
+        float distanceBetweenAnglesX = endEulerAngles.x - startEulerAngles.x;
+        float distanceBetweenAnglesY = endEulerAngles.y - startEulerAngles.y;
+
+        while (isRotating)
+        {
+            if (startPosition.z > endPosition.z)
+            {
+                startPosition = new Vector3(startPosition.x, startPosition.y, Mathf.MoveTowards(startPosition.z, endPosition.z, tossUpHeight * 2f / rotateSpeed * 100 * Time.deltaTime));
+
+                obj.transform.position = startPosition;
+            }
+            else
+            {
+                endPosition = new Vector3(endPosition.x, endPosition.y, endPosition.z + tossUpHeight);
+
+                startPosition = new Vector3(startPosition.x, startPosition.y, Mathf.MoveTowards(startPosition.z, endPosition.z, tossUpHeight * 2f / rotateSpeed * 100 * Time.deltaTime));
+
+                obj.transform.position = startPosition;
+            }
+
+
+            startEulerAngles = new Vector3(Mathf.MoveTowards(startEulerAngles.x, endEulerAngles.x, distanceBetweenAnglesX / rotateSpeed * 100 * Time.deltaTime),
+                 Mathf.MoveTowards(startEulerAngles.y, endEulerAngles.y, distanceBetweenAnglesY / rotateSpeed * 100 * Time.deltaTime), startEulerAngles.z);
+
+            obj.transform.eulerAngles = startEulerAngles;
+
+            if (startEulerAngles.x >= endEulerAngles.x - 0.5f && startEulerAngles.y >= endEulerAngles.y - 0.5f)
+            {
+                obj.transform.eulerAngles = new Vector3(Mathf.Round(startEulerAngles.x), Mathf.Round(startEulerAngles.y), startEulerAngles.z);
+
+                obj.transform.position = new Vector3(startPosition.x, startPosition.y, startHeight);
+
+                isRotating = false;
+            }
+
+            yield return null;
+        }
+    }
+
     public static IEnumerator SetChessBoard(GameObject chessBoard, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
     {
         Vector3 offset = Vector3.forward * 10f;

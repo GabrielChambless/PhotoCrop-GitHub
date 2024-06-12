@@ -24,4 +24,4 @@ MonoBehaviour:
   tickOrder: 0
   tickActionType: 0
   tickActionTargetType: 0
-  tickActionManualTarget: {x: 0, y: 0}
+  tickActionManualTarget: {x: 1, y: 3}

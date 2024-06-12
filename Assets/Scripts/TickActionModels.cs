@@ -4,12 +4,13 @@ using System;
 using UnityEngine;
 using System.Linq;
 
-public class TickActionModels : MonoBehaviour
+public static class TickActionModels
 {
     public enum TickActionTypes
     {
         None,
-        MoveToTarget
+        MoveToTarget,
+        MoveAndAttackToTarget
     }
 
     public enum TickActionTargetTypes
@@ -34,9 +35,13 @@ public class TickActionModels : MonoBehaviour
             case TickActionTypes.MoveToTarget:
                 cellEntity.TickAction = MoveToTarget;
                 break;
+            case TickActionTypes.MoveAndAttackToTarget:
+                cellEntity.TickAction = MoveAndAttackToTarget;
+                break;
         }
     }
 
+    // Tick Actions
     private static IEnumerator MoveToTarget(CellEntity cellEntity)
     {
         cellEntity.NumberOfTickActionsPerformed++;
@@ -194,6 +199,176 @@ public class TickActionModels : MonoBehaviour
         }
     }
 
+    private static IEnumerator MoveAndAttackToTarget(CellEntity cellEntity)
+    {
+        cellEntity.NumberOfTickActionsPerformed++;
+
+        Vector2Int currentPosition = cellEntity.Position;
+
+        Dictionary<CellEntity, (List<Vector2Int>, bool)> entityPaths = new Dictionary<CellEntity, (List<Vector2Int>, bool)>();
+
+        // Selected target to move towards
+        (CellEntity selectedTarget, List<Vector2Int> shortestPath, bool foundUnblockedPath) = (null, null, false);
+
+        // Target position to move towards for Manual
+        Vector2Int targetPosition = cellEntity.TickActionManualTarget;
+
+        switch (cellEntity.TickActionTargetType)
+        {
+            case TickActionTargetTypes.NotSameGroupEntity:
+                foreach (CellEntity entity in LevelController.Instance.CellEntities)
+                {
+                    if (entity.EntityGroupType != cellEntity.EntityGroupType && entity != cellEntity)
+                    {
+                        (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
+                        entityPaths.Add(entity, pathToEntity);
+                    }
+                }
+                break;
+            case TickActionTargetTypes.SameGroupEntity:
+                foreach (CellEntity entity in LevelController.Instance.CellEntities)
+                {
+                    if (entity.EntityGroupType == cellEntity.EntityGroupType && entity != cellEntity)
+                    {
+                        (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
+                        entityPaths.Add(entity, pathToEntity);
+                    }
+                }
+                break;
+            case TickActionTargetTypes.Manual:
+                (List<Vector2Int>, bool) pathToTarget = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, targetPosition, cellEntity.CellTypesCanMoveOn);
+
+                selectedTarget = null;
+                shortestPath = pathToTarget.Item1;
+                foundUnblockedPath = pathToTarget.Item2;
+                break;
+        }
+
+        if (cellEntity.TickActionTargetType == TickActionTargetTypes.NotSameGroupEntity || cellEntity.TickActionTargetType == TickActionTargetTypes.SameGroupEntity)
+        {
+            foreach (KeyValuePair<CellEntity, (List<Vector2Int>, bool)> kvp in entityPaths)
+            {
+                (CellEntity entity, List<Vector2Int> path, bool isUnblocked) = (kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
+
+                if (isUnblocked && (shortestPath == null || path.Count < shortestPath.Count))
+                {
+                    selectedTarget = entity;
+                    shortestPath = path;
+                    foundUnblockedPath = true;
+                }
+                else if (!foundUnblockedPath && (shortestPath == null || path.Count < shortestPath.Count))
+                {
+                    selectedTarget = entity;
+                    shortestPath = path;
+                }
+            }
+        }
+
+        switch (cellEntity.TickActionTargetType)
+        {
+            case TickActionTargetTypes.NotSameGroupEntity:
+            case TickActionTargetTypes.SameGroupEntity:
+                if (selectedTarget != null)
+                {
+                    Debug.Log($"Selected target: {selectedTarget.Position} with path length: {shortestPath.Count}");
+
+                    for (int i = 0; i < cellEntity.MovementRange; i++)
+                    {
+                        if (i > shortestPath.Count - 1)
+                        {
+                            break;
+                        }
+
+                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
+
+                        int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = null;
+
+                        cellEntity.Position = shortestPath[i];
+
+                        cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
+
+                        if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity != null && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.CanBeRemovedByOtherEntities)
+                        {
+                            LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.EntityObject, Vector2.up));
+                        }
+
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = cellEntity;
+
+                        cellEntity.NumberOfTickActionsFailed = 0;
+                    }
+                }
+                else
+                {
+                    Debug.Log("No valid target found.");
+                }
+
+                if (selectedTarget != null && cellEntity.Position == selectedTarget.Position)
+                {
+                    Debug.Log("The CellEntity has reached its target position.");
+                    cellEntity.NumberOfTickActionsFailed = 0;
+                    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+                }
+                break;
+            case TickActionTargetTypes.Manual:
+                if (shortestPath != null)
+                {
+                    Debug.Log($"Target position: {targetPosition} with path length: {shortestPath.Count}");
+
+                    for (int i = 0; i < cellEntity.MovementRange; i++)
+                    {
+                        if (i > shortestPath.Count - 1)
+                        {
+                            break;
+                        }
+
+                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
+
+                        int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = null;
+
+                        cellEntity.Position = shortestPath[i];
+
+                        cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
+
+                        if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity != null && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.CanBeRemovedByOtherEntities)
+                        {
+                            LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.EntityObject, Vector2.up));
+                        }
+
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = cellEntity;
+
+                        cellEntity.NumberOfTickActionsFailed = 0;
+                    }
+                }
+
+                if (cellEntity.Position == targetPosition)
+                {
+                    Debug.Log("The CellEntity has reached its target position.");
+                    cellEntity.NumberOfTickActionsFailed = 0;
+                    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+                }
+                break;
+        }
+
+        // Didn't change position and not at target position, so count as failed attempt
+        if (cellEntity.Position == currentPosition)
+        {
+            cellEntity.NumberOfTickActionsFailed++;
+
+            if (cellEntity.NumberOfTickActionsFailed > 1)
+            {
+                Debug.Log("The CellEntity failed to reach their taret position.");
+                cellEntity.NumberOfTickActionsFailed = 0;
+                TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+            }
+        }
+    }
+
+
     public static List<Vector2Int> CalculatePossibleMoves(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
     {
         List<Vector2Int> possibleMoves = new List<Vector2Int>();
@@ -210,7 +385,7 @@ public class TickActionModels : MonoBehaviour
 
                 if (shouldAlternate && validContentTypes != null)
                 {
-                    if (!IsPositionValid(hole, currentPosition, validContentTypes, validContentTypes[indexTracker]))
+                    if (!IsPositionValid(cellEntity, hole, currentPosition, validContentTypes, validContentTypes[indexTracker]))
                     {
                         break;
                     }
@@ -219,7 +394,7 @@ public class TickActionModels : MonoBehaviour
                 }
                 else
                 {
-                    if (!IsPositionValid(hole, currentPosition, validContentTypes))
+                    if (!IsPositionValid(cellEntity, hole, currentPosition, validContentTypes))
                     {
                         break;
                     }
@@ -267,7 +442,7 @@ public class TickActionModels : MonoBehaviour
                     {
                         GameStats.CellContentTypes nextContentType = validContentTypes[indexTracker];
 
-                        if (IsPositionValid(hole, next, validContentTypes, nextContentType))
+                        if (IsPositionValid(cellEntity, hole, next, validContentTypes, nextContentType))
                         {
                             queue.Enqueue((next, (indexTracker + 1) % validContentTypes.Count));
                             cameFrom[next] = current;
@@ -283,7 +458,7 @@ public class TickActionModels : MonoBehaviour
                     }
                     else
                     {
-                        if (IsPositionValid(hole, next, validContentTypes))
+                        if (IsPositionValid(cellEntity, hole, next, validContentTypes))
                         {
                             queue.Enqueue((next, indexTracker));
                             cameFrom[next] = current;
@@ -384,19 +559,21 @@ public class TickActionModels : MonoBehaviour
         }
     }
 
-    private static bool IsPositionValid(Hole hole, Vector2Int position, List<GameStats.CellContentTypes> validContentTypes, GameStats.CellContentTypes specificContentType = GameStats.CellContentTypes.Empty)
+    private static bool IsPositionValid(CellEntity cellEntity, Hole hole, Vector2Int position, List<GameStats.CellContentTypes> validContentTypes, GameStats.CellContentTypes specificContentType = GameStats.CellContentTypes.Empty)
     {
         HoleCell cell = hole.HoleLayout.FirstOrDefault(c => c.Position == position);
 
         if (validContentTypes != null && specificContentType != GameStats.CellContentTypes.Empty)
         {
-            return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition) && validContentTypes.Contains(cell.CellContentType) && cell.CellContentType == specificContentType;
+            return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition || (cell.CellEntity.CanBeRemovedByOtherEntities && cellEntity.TickActionType == TickActionTypes.MoveAndAttackToTarget))
+                && validContentTypes.Contains(cell.CellContentType) && cell.CellContentType == specificContentType;
         }
         else if (validContentTypes != null && specificContentType == GameStats.CellContentTypes.Empty)
         {
-            return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition) && validContentTypes.Contains(cell.CellContentType);
+            return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition || (cell.CellEntity.CanBeRemovedByOtherEntities && cellEntity.TickActionType == TickActionTypes.MoveAndAttackToTarget))
+                && validContentTypes.Contains(cell.CellContentType);
         }
 
-        return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition);
+        return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition || (cell.CellEntity.CanBeRemovedByOtherEntities && cellEntity.TickActionType == TickActionTypes.MoveAndAttackToTarget));
     }
 }

@@ -27,6 +27,7 @@ public class CellEntityData : ScriptableObject
     [SerializeField] private List<GameStats.CellContentTypes> cellTypesCanMoveOn = new List<GameStats.CellContentTypes>();
     [SerializeField] private int movementRange;
     [SerializeField] private bool canSharePosition;
+    [SerializeField] private bool canBeRemovedByOtherEntities;
 
     [SerializeField] private TickManager.TickTypes tickType;
     [SerializeField] private int tickOrder;
@@ -41,6 +42,7 @@ public class CellEntityData : ScriptableObject
     public List<GameStats.CellContentTypes> CellTypesCanMoveOn => cellTypesCanMoveOn;
     public int MovementRange => movementRange;
     public bool CanSharePosition => canSharePosition;
+    public bool CanBeRemovedByOtherEntities => canBeRemovedByOtherEntities;
 
     public TickManager.TickTypes TickType => tickType;
     public int TickOrder => tickOrder;
