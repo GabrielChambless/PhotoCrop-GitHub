@@ -8,6 +8,7 @@ public class TickManager : MonoBehaviour
 {
     public enum TickTypes
     {
+        None,
         PriorityOrder,
         InstantiationOrder,
         Simultaneous
@@ -83,13 +84,25 @@ public class TickManager : MonoBehaviour
 
             if (priorityIndex < priorityOrderSubscribers.Count)
             {
-                yield return priorityOrderSubscribers.OrderBy(s => s.TickOrder).ElementAt(priorityIndex).TickAction(priorityOrderSubscribers[priorityIndex].Subscriber);
+                TickSubscriber subscriber = priorityOrderSubscribers.OrderBy(s => s.TickOrder).ElementAt(priorityIndex);
+
+                if (subscriber.TickAction != null)
+                {
+                    yield return subscriber.TickAction(subscriber.Subscriber);
+                }
+
                 priorityIndex++;
                 tickActionPerformed = true;
             }
             else if (instantiationIndex < instantiationOrderSubscribers.Count)
             {
-                yield return instantiationOrderSubscribers.ElementAt(instantiationIndex).TickAction(instantiationOrderSubscribers[instantiationIndex].Subscriber);
+                TickSubscriber subscriber = instantiationOrderSubscribers.ElementAt(instantiationIndex);
+
+                if (subscriber.TickAction != null)
+                {
+                    yield return subscriber.TickAction(subscriber.Subscriber);
+                }
+
                 instantiationIndex++;
                 tickActionPerformed = true;
             }
@@ -97,7 +110,10 @@ public class TickManager : MonoBehaviour
             {
                 foreach (TickSubscriber subscriber in simultaneousSubscribers)
                 {
-                    yield return subscriber.TickAction(subscriber.Subscriber);
+                    if (subscriber.TickAction != null)
+                    {
+                        yield return subscriber.TickAction(subscriber.Subscriber);
+                    }
                 }
 
                 // Reset indices after simultaneous subscribers
@@ -115,19 +131,34 @@ public class TickManager : MonoBehaviour
                 // Perform the next available tick action
                 if (priorityIndex < priorityOrderSubscribers.Count)
                 {
-                    yield return priorityOrderSubscribers.OrderBy(s => s.TickOrder).ElementAt(priorityIndex).TickAction(priorityOrderSubscribers[priorityIndex].Subscriber);
+                    TickSubscriber subscriber = priorityOrderSubscribers.OrderBy(s => s.TickOrder).ElementAt(priorityIndex);
+
+                    if (subscriber.TickAction != null)
+                    {
+                        yield return subscriber.TickAction(subscriber.Subscriber);
+                    }
+
                     priorityIndex++;
                 }
                 else if (instantiationIndex < instantiationOrderSubscribers.Count)
                 {
-                    yield return instantiationOrderSubscribers.ElementAt(instantiationIndex).TickAction(instantiationOrderSubscribers[instantiationIndex].Subscriber);
+                    TickSubscriber subscriber = instantiationOrderSubscribers.ElementAt(instantiationIndex);
+
+                    if (subscriber.TickAction != null)
+                    {
+                        yield return subscriber.TickAction(subscriber.Subscriber);
+                    }
+
                     instantiationIndex++;
                 }
                 else if (simultaneousSubscribers.Any())
                 {
-                    foreach (var subscriber in simultaneousSubscribers)
+                    foreach (TickSubscriber subscriber in simultaneousSubscribers)
                     {
-                        yield return subscriber.TickAction(subscriber.Subscriber);
+                        if (subscriber.TickAction != null)
+                        {
+                            yield return subscriber.TickAction(subscriber.Subscriber);
+                        }
                     }
 
                     // Reset indices after simultaneous subscribers
@@ -142,11 +173,18 @@ public class TickManager : MonoBehaviour
         }
     }
 
+
     public void Subscribe(CellEntity subscriber, Func<CellEntity, IEnumerator> tickAction, int tickOrder, TickTypes tickType)
     {
         if (subscriber == null)
         {
             Debug.LogWarning("The subscriber's EntityObject was null; cannot subscribe to TickManager.");
+            return;
+        }
+
+        if (tickAction == null)
+        {
+            Debug.LogWarning("The subscriber's TickAction was null; cannot subscribe to TickManager.");
             return;
         }
 

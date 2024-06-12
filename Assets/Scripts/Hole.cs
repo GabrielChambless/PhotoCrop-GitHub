@@ -72,9 +72,6 @@ public class Hole
                     cellEntity.EntityObject = Object.Instantiate(holeData.CellEntityLayout[indexOfCellEntity].EntityObject);
                     cellEntity.EntityObject.transform.position = holeCellObject.transform.position - (Vector3.forward / 2);
                     cellEntity.Position = cell.Position;
-                    // TODO; sort this out
-                    //cellEntity.CurrentPossibleMoves = CellEntity.CalculatePossibleMoves(newHole, cellEntity);
-                    cellEntity.CurrentPath = TickActionModels.CalculatePathToTarget(newHole, cellEntity, new Vector2Int(0, 7), new List<GameStats.CellContentTypes> { GameStats.CellContentTypes.Wall, GameStats.CellContentTypes.RedCell }).path;
                     cell.CellEntity = cellEntity;
 
                     if (LevelController.Instance != null)
