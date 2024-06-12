@@ -17,7 +17,6 @@ public class TickActionModels : MonoBehaviour
         None,
         NotSameGroupEntity,
         SameGroupEntity,
-        RandomEntity,
         Manual
     }
 
@@ -79,20 +78,6 @@ public class TickActionModels : MonoBehaviour
                     }
                 }
                 break;
-            case TickActionTargetTypes.RandomEntity:
-                foreach (CellEntity entity in LevelController.Instance.CellEntities)
-                {
-                    if (entity != cellEntity)
-                    {
-                        (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
-
-                        if (pathToEntity.Item2)
-                        {
-                            entityPaths.Add(entity, pathToEntity);
-                        }
-                    }
-                }
-                break;
             case TickActionTargetTypes.Manual:
                 (List<Vector2Int>, bool) pathToTarget = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, targetPosition, cellEntity.CellTypesCanMoveOn);
 
@@ -123,31 +108,11 @@ public class TickActionModels : MonoBehaviour
                 }
             }
         }
-        else if (cellEntity.TickActionTargetType == TickActionTargetTypes.RandomEntity)
-        {
-            if (entityPaths.Count > 0)
-            {
-                int randomIndex = UnityEngine.Random.Range(0, entityPaths.Count);
-
-                selectedTarget = entityPaths.ElementAt(randomIndex).Key;
-                shortestPath = entityPaths.ElementAt(randomIndex).Value.Item1;
-                foundUnblockedPath = entityPaths.ElementAt(randomIndex).Value.Item2;
-            }
-            else if (LevelController.Instance.CellEntities.Count > 0)
-            {
-                int randomIndex = UnityEngine.Random.Range(0, LevelController.Instance.CellEntities.Count);
-
-                selectedTarget = LevelController.Instance.CellEntities.ElementAt(randomIndex);
-                shortestPath = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, selectedTarget.Position, cellEntity.CellTypesCanMoveOn).path;
-                foundUnblockedPath = false;
-            }
-        }
 
         switch (cellEntity.TickActionTargetType)
         {
             case TickActionTargetTypes.NotSameGroupEntity:
             case TickActionTargetTypes.SameGroupEntity:
-            case TickActionTargetTypes.RandomEntity:
                 if (selectedTarget != null)
                 {
                     Debug.Log($"Selected target: {selectedTarget.Position} with path length: {shortestPath.Count}");
