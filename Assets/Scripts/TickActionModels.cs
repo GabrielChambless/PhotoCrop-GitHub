@@ -60,11 +60,6 @@ public class TickActionModels : MonoBehaviour
                     {
                         (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn);
                         entityPaths.Add(entity, pathToEntity);
-
-                        foreach (var path in pathToEntity.Item1)
-                        {
-                            Debug.Log(path);
-                        }
                     }
                 }
                 break;
@@ -92,8 +87,6 @@ public class TickActionModels : MonoBehaviour
             foreach (KeyValuePair<CellEntity, (List<Vector2Int>, bool)> kvp in entityPaths)
             {
                 (CellEntity entity, List<Vector2Int> path, bool isUnblocked) = (kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
-
-                Debug.Log("path count: " + path.Count);
 
                 if (isUnblocked && (shortestPath == null || path.Count < shortestPath.Count))
                 {
@@ -200,33 +193,6 @@ public class TickActionModels : MonoBehaviour
             }
         }
     }
-
-    ////////////////////////////////////////////////////////////
-    public static IEnumerator PawnPromotion(CellEntity playerPawn, List<CellEntity> rivalPieces = null)
-    {
-        // while loop
-        // pawn checks if rival piece is forward (up y) daigonal to it, if so attack
-        // if not attack, move forward (up y)
-
-        // rival piece index tracker
-        // move rival piece at index of tracker along path, with the path target being the player pawn piece
-        // for loop end
-
-        playerPawn.CurrentPath = CalculatePathToTarget(LevelController.Instance.CurrentHole, playerPawn, new Vector2Int(playerPawn.Position.x, 6)).path;
-
-        while (playerPawn.CurrentPath.Count != 0)
-        {
-            playerPawn.Position = playerPawn.CurrentPath[0];
-            playerPawn.CurrentPath.RemoveAt(0);
-            playerPawn.EntityObject.transform.position = new Vector3(playerPawn.Position.x, playerPawn.Position.y, playerPawn.EntityObject.transform.position.z);
-
-            yield return new WaitForSeconds(0.5f);
-
-        }
-
-    }
-    ////////////////////////////////////////////////////////////
-
 
     public static List<Vector2Int> CalculatePossibleMoves(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
     {
@@ -424,120 +390,13 @@ public class TickActionModels : MonoBehaviour
 
         if (validContentTypes != null && specificContentType != GameStats.CellContentTypes.Empty)
         {
-            return cell != null && cell.CellEntity == null && validContentTypes.Contains(cell.CellContentType) && cell.CellContentType == specificContentType;
+            return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition) && validContentTypes.Contains(cell.CellContentType) && cell.CellContentType == specificContentType;
         }
         else if (validContentTypes != null && specificContentType == GameStats.CellContentTypes.Empty)
         {
-            return cell != null && cell.CellEntity == null && validContentTypes.Contains(cell.CellContentType);
+            return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition) && validContentTypes.Contains(cell.CellContentType);
         }
 
-        return cell != null && cell.CellEntity == null;
+        return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition);
     }
-
-
-    //public static List<Vector2Int> CalculatePathToTarget(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
-    //{
-    //    Queue<(Vector2Int position, int indexTracker)> queue = new Queue<(Vector2Int position, int indexTracker)>();
-    //    Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
-
-    //    queue.Enqueue((cellEntity.Position, 0));
-    //    cameFrom[cellEntity.Position] = cellEntity.Position;
-
-    //    Vector2Int farthestReachable = cellEntity.Position;
-
-    //    while (queue.Count > 0)
-    //    {
-    //        var (current, indexTracker) = queue.Dequeue();
-
-    //        if (current == targetPosition)
-    //        {
-    //            farthestReachable = current;
-    //            break;
-    //        }
-
-    //        foreach (GameStats.DirectionTypes direction in cellEntity.DirectionsCanMove)
-    //        {
-    //            Vector2Int next = current + GetDirectionVector(direction);
-
-    //            if (shouldAlternate && validContentTypes != null)
-    //            {
-    //                GameStats.CellContentTypes nextContentType = validContentTypes[indexTracker];
-
-    //                if (IsPositionValid(hole, next, validContentTypes, nextContentType))
-    //                {
-    //                    if (!cameFrom.ContainsKey(next))
-    //                    {
-    //                        queue.Enqueue((next, (indexTracker + 1) % validContentTypes.Count));
-    //                        cameFrom[next] = current;
-    //                        farthestReachable = next;
-    //                    }
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if (IsPositionValid(hole, next, validContentTypes))
-    //                {
-    //                    if (!cameFrom.ContainsKey(next))
-    //                    {
-    //                        queue.Enqueue((next, indexTracker));
-    //                        cameFrom[next] = current;
-    //                        farthestReachable = next;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    List<Vector2Int> path = new List<Vector2Int>();
-    //    Vector2Int step = targetPosition;
-
-    //    // If the target position is not reachable, use the farthest reachable position
-    //    if (!cameFrom.ContainsKey(step))
-    //    {
-    //        Debug.Log("Couldn't find a path to the target. Returning the path to the farthest reachable position.");
-    //        step = farthestReachable;
-    //    }
-
-    //    while (step != cellEntity.Position)
-    //    {
-    //        path.Add(step);
-    //        step = cameFrom[step];
-    //    }
-
-    //    path.Add(cellEntity.Position);
-    //    path.Reverse();
-
-    //    foreach (var pos in path)
-    //    {
-    //        Debug.Log(pos);
-    //    }
-
-    //    return path;
-    //}
 }
-
-// all tick actions will take place after the grid is filled or no more shapes remain
-
-// move pawn to get promotion:
-// place shape
-// recalculate pawn path
-// if can attack enemy piece, it does attack method (combo of moving and removing attacked piece from board)
-// else if can move, pawn moves to next position in path
-
-// this pawn's general action:
-// attack diagonal enemy if possible
-// if don't attack, move forward if path is possible
-
-
-// in levelcontroller:
-// after place shape coroutine is finished (or cropped shaped coroutine is finished), call all after shapeplaced tick actions
-
-
-// spawn in hole, shapes, and cell entities
-// then after everything is spawned in, do tick action subscriptions
-
-// method to determine subscribers based on level:
-// for pawn promotion, the player pawn moves every other turn, and the black player gets 5 moves
-// pawn executes pawn method, which is attack, if cannot, move forward,
-// opposing pieces exectute calculate path to target method, which is the player pawn, and chooses the best piece to move towards pawn
-// then pawn goes again and restarts cycle

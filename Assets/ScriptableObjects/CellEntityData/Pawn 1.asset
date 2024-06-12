@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityObject: {fileID: 2137027274865235529, guid: dc348d9cf75e060498f0c25645ee7167,
     type: 3}
-  entityType: 1
-  entityGroupType: 0
-  directionsCanMove: 0000000003000000
-  movementRange: 1
-  canSharePosition: 0
-  tickType: 1
+  entityType: 0
+  entityGroupType: 3
+  directionsCanMove: 
+  cellTypesCanMoveOn: 
+  movementRange: 0
+  canSharePosition: 1
+  tickType: 0
   tickOrder: 0
   tickActionType: 0
   tickActionTargetType: 0
