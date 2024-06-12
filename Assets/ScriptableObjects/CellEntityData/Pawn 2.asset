@@ -15,11 +15,12 @@ MonoBehaviour:
   entityObject: {fileID: 2137027274865235529, guid: dc348d9cf75e060498f0c25645ee7167,
     type: 3}
   entityType: 0
-  entityGroupType: 3
+  entityGroupType: 1
   directionsCanMove: 
   cellTypesCanMoveOn: 
   movementRange: 0
-  canSharePosition: 1
+  canSharePosition: 0
+  canBeRemovedByOtherEntities: 0
   tickType: 0
   tickOrder: 0
   tickActionType: 0

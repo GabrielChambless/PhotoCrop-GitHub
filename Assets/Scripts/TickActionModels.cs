@@ -283,6 +283,7 @@ public static class TickActionModels
 
                         int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = null;
+                        Vector2Int previousPosition = cellEntity.Position;
 
                         cellEntity.Position = shortestPath[i];
 
@@ -290,7 +291,7 @@ public static class TickActionModels
 
                         if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity != null && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.CanBeRemovedByOtherEntities)
                         {
-                            LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.EntityObject, Vector2.up));
+                            LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                         }
 
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = cellEntity;
@@ -327,6 +328,7 @@ public static class TickActionModels
 
                         int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = null;
+                        Vector2Int previousPosition = cellEntity.Position;
 
                         cellEntity.Position = shortestPath[i];
 
@@ -334,7 +336,7 @@ public static class TickActionModels
 
                         if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity != null && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.CanBeRemovedByOtherEntities)
                         {
-                            LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.EntityObject, Vector2.up));
+                            LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity.EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                         }
 
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = cellEntity;
@@ -534,6 +536,7 @@ public static class TickActionModels
             position + new Vector2Int(-1, -1)   // DownLeft
         };
     }
+
     private static Vector2Int GetDirectionVector(GameStats.DirectionTypes direction)
     {
         switch (direction)
@@ -575,5 +578,17 @@ public static class TickActionModels
         }
 
         return cell != null && (cell.CellEntity == null || cell.CellEntity.CanSharePosition || (cell.CellEntity.CanBeRemovedByOtherEntities && cellEntity.TickActionType == TickActionTypes.MoveAndAttackToTarget));
+    }
+
+    private static Vector2 GetDirection(Vector2Int startPos, Vector2Int endPos)
+    {
+        Vector2Int difference = endPos - startPos;
+
+        if (Mathf.Abs(difference.x) > Mathf.Abs(difference.y))
+        {
+            return new Vector2(Mathf.Sign(difference.x), 0); // Horizontal direction
+        }
+
+        return new Vector2(0, Mathf.Sign(difference.y)); // Vertical direction
     }
 }

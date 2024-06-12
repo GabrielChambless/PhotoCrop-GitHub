@@ -142,7 +142,7 @@ public static class AnimationModels
         objectTransform.position = targetPos;
     }
 
-    public static IEnumerator RotateAndFlyAway(GameObject obj, Vector2 direction, float duration = 0.25f, float flyDistance = 0.75f)
+    public static IEnumerator RotateAndFlyAway(GameObject obj, Vector2 direction, float duration = 0.25f, float flyDistance = 1f)
     {
         Vector3 startPosition = obj.transform.position;
         Quaternion startRotation = obj.transform.rotation;
@@ -153,15 +153,21 @@ public static class AnimationModels
 
         // Determine the target rotation based on the direction
         Quaternion targetRotation;
-        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        if (direction == Vector2.right)
         {
-            // Rotate around Y-axis for horizontal direction
-            targetRotation = startRotation * Quaternion.Euler(0, direction.x > 0 ? -90 : 90, 0);
+            targetRotation = startRotation * Quaternion.Euler(0, 0, -90);
         }
-        else
+        else if (direction == -Vector2.right)
         {
-            // Rotate around X-axis for vertical direction
-            targetRotation = startRotation * Quaternion.Euler(direction.y > 0 ? 90 : -90, 0, 0);
+            targetRotation = startRotation * Quaternion.Euler(0, 0, 90);
+        }
+        else if (direction == Vector2.up)
+        {
+            targetRotation = Quaternion.Euler(0, startRotation.eulerAngles.y, startRotation.eulerAngles.z);
+        }
+        else // direction == Vector2.down
+        {
+            targetRotation = Quaternion.Euler(-180, startRotation.eulerAngles.y, startRotation.eulerAngles.z);
         }
 
         while (elapsedTime < duration)

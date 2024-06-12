@@ -19,7 +19,8 @@ MonoBehaviour:
   directionsCanMove: 
   cellTypesCanMoveOn: 
   movementRange: 0
-  canSharePosition: 1
+  canSharePosition: 0
+  canBeRemovedByOtherEntities: 1
   tickType: 0
   tickOrder: 0
   tickActionType: 0
