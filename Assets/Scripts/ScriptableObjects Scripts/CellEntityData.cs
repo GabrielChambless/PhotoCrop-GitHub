@@ -26,6 +26,7 @@ public class CellEntityData : ScriptableObject
     [SerializeField] private List<GameStats.DirectionTypes> directionsCanMove = new List<GameStats.DirectionTypes>();
     [SerializeField] private bool canChangeMovementDirection;
     [SerializeField] private List<GameStats.CellContentTypes> cellTypesCanMoveOn = new List<GameStats.CellContentTypes>();
+    [SerializeField] private bool shouldAlternateCellTypesWhenMoving;
     [SerializeField] private int movementRange;
     [SerializeField] private bool canSharePosition;
     [SerializeField] private bool canBeRemovedByOtherEntities;
@@ -42,6 +43,7 @@ public class CellEntityData : ScriptableObject
     public List<GameStats.DirectionTypes> DirectionsCanMove => directionsCanMove;
     public bool CanChangeMovementDirection => canChangeMovementDirection;
     public List<GameStats.CellContentTypes> CellTypesCanMoveOn => cellTypesCanMoveOn;
+    public bool ShouldAlternateCellTypesWhenMoving => shouldAlternateCellTypesWhenMoving;
     public int MovementRange => movementRange;
     public bool CanSharePosition => canSharePosition;
     public bool CanBeRemovedByOtherEntities => canBeRemovedByOtherEntities;
