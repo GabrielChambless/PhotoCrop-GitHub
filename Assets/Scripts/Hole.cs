@@ -72,7 +72,7 @@ public class Hole
                     cellEntity.EntityObject = Object.Instantiate(holeData.CellEntityLayout[indexOfCellEntity].EntityObject);
                     cellEntity.EntityObject.transform.position = holeCellObject.transform.position - (Vector3.forward / 2);
                     cellEntity.Position = cell.Position;
-                    cell.CellEntity = cellEntity;
+                    cell.CellEntities.Add(cellEntity);
 
                     if (LevelController.Instance != null)
                     {

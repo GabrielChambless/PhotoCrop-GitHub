@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,5 +8,5 @@ public class HoleCell
     public Vector2Int Position;
     public bool IsFilled;
     public GameStats.CellContentTypes CellContentType;
-    public CellEntity CellEntity;
+    public List<CellEntity> CellEntities = new List<CellEntity>();
 }
