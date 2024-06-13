@@ -47,6 +47,7 @@ public static class TickActionModels
         cellEntity.NumberOfTickActionsPerformed++;
 
         Vector2Int currentPosition = cellEntity.Position;
+        Vector2Int startingPositon = currentPosition;
 
         Dictionary<CellEntity, (List<Vector2Int>, bool)> entityPaths = new Dictionary<CellEntity, (List<Vector2Int>, bool)>();
 
@@ -111,9 +112,11 @@ public static class TickActionModels
         {
             case TickActionTargetTypes.NotSameGroupEntity:
             case TickActionTargetTypes.SameGroupEntity:
-                if (selectedTarget != null)
+                if (selectedTarget != null && shortestPath.Count > 0)
                 {
                     Debug.Log($"Selected target: {selectedTarget.Position} with path length: {shortestPath.Count}");
+
+                    Vector2Int previousPosition = currentPosition;
 
                     for (int i = 0; i < cellEntity.MovementRange; i++)
                     {
@@ -122,12 +125,24 @@ public static class TickActionModels
                             break;
                         }
 
-                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
+                        Vector2Int nextPosition = shortestPath[i];
+                        Vector2Int currentDirection = nextPosition - currentPosition;
+                        Vector2Int previousDirection = currentPosition - previousPosition;
+
+                        if (i > 0 && !cellEntity.CanChangeMovementDirection && currentDirection != previousDirection)
+                        {
+                            break;
+                        }
+
+                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(nextPosition.x, nextPosition.y, cellEntity.EntityObject.transform.position.z));
 
                         int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = null;
 
-                        cellEntity.Position = shortestPath[i];
+                        previousPosition = currentPosition;
+                        currentPosition = nextPosition;
+
+                        cellEntity.Position = currentPosition;
 
                         cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = cellEntity;
@@ -149,9 +164,11 @@ public static class TickActionModels
                 }
                 break;
             case TickActionTargetTypes.Manual:
-                if (shortestPath != null)
+                if (shortestPath != null && shortestPath.Count > 0)
                 {
                     Debug.Log($"Target position: {targetPosition} with path length: {shortestPath.Count}");
+
+                    Vector2Int previousPosition = currentPosition;
 
                     for (int i = 0; i < cellEntity.MovementRange; i++)
                     {
@@ -160,12 +177,24 @@ public static class TickActionModels
                             break;
                         }
 
-                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(shortestPath[i].x, shortestPath[i].y, cellEntity.EntityObject.transform.position.z));
+                        Vector2Int nextPosition = shortestPath[i];
+                        Vector2Int currentDirection = shortestPath[i] - currentPosition;
+                        Vector2Int previousDirection = currentPosition - previousPosition;
+
+                        if (i > 0 && !cellEntity.CanChangeMovementDirection && currentDirection != previousDirection)
+                        {
+                            break;
+                        }
+
+                        yield return AnimationModels.MoveSnap(cellEntity.EntityObject.transform, new Vector3(nextPosition.x, nextPosition.y, cellEntity.EntityObject.transform.position.z));
 
                         int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = null;
 
-                        cellEntity.Position = shortestPath[i];
+                        previousPosition = currentPosition;
+                        currentPosition = nextPosition;
+
+                        cellEntity.Position = currentPosition;
 
                         cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntity = cellEntity;
@@ -185,19 +214,22 @@ public static class TickActionModels
         }
 
         // Didn't change position and not at target position, so count as failed attempt
-        if (cellEntity.Position == currentPosition)
+        if (cellEntity.Position == startingPositon)
         {
             cellEntity.NumberOfTickActionsFailed++;
 
             if (cellEntity.NumberOfTickActionsFailed > 1)
             {
-                Debug.Log("The CellEntity failed to reach their taret position.");
+                Debug.Log("The CellEntity failed to reach their target position.");
                 cellEntity.NumberOfTickActionsFailed = 0;
                 TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
                 Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
             }
         }
     }
+
+
+
 
     private static IEnumerator MoveAndAttackToTarget(CellEntity cellEntity)
     {
@@ -411,6 +443,17 @@ public static class TickActionModels
 
     public static (List<Vector2Int> path, bool isUnblocked) CalculatePathToTarget(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
     {
+        if (cellEntity.CanChangeMovementDirection)
+        {
+            return CalculatePathWithBFS(hole, cellEntity, targetPosition, validContentTypes, shouldAlternate);
+        }
+
+        // New logic for entities that cannot change direction mid movement
+        return CalculatePathWithMinimalDirectionChanges(hole, cellEntity, targetPosition, validContentTypes, shouldAlternate);
+    }
+
+    private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithBFS(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
+    {
         Queue<(Vector2Int position, int indexTracker)> queue = new Queue<(Vector2Int position, int indexTracker)>();
         Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
         HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
@@ -502,6 +545,117 @@ public static class TickActionModels
         path.Reverse();
 
         return (path, isUnblocked);
+    }
+
+    private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithMinimalDirectionChanges(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
+    {
+        var priorityQueue = new SortedSet<(int directionChanges, float distance, Vector2Int position, Vector2Int previousPosition)>(new PathComparer());
+        Dictionary<Vector2Int, (Vector2Int previousPosition, int directionChanges)> cameFrom = new Dictionary<Vector2Int, (Vector2Int, int)>();
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+
+        Vector2Int startPosition = cellEntity.Position;
+        priorityQueue.Add((0, Vector2Int.Distance(startPosition, targetPosition), startPosition, startPosition));
+        cameFrom[startPosition] = (startPosition, 0);
+        visited.Add(startPosition);
+
+        Vector2Int farthestReachable = startPosition;
+        float closestDistance = Vector2Int.Distance(startPosition, targetPosition);
+        bool isUnblocked = false;
+
+        while (priorityQueue.Count > 0)
+        {
+            var (currentDirectionChanges, currentDistance, currentPosition, previousPosition) = priorityQueue.Min;
+            priorityQueue.Remove(priorityQueue.Min);
+
+            if (currentPosition == targetPosition)
+            {
+                farthestReachable = currentPosition;
+                isUnblocked = true;
+                break;
+            }
+
+            foreach (GameStats.DirectionTypes direction in cellEntity.DirectionsCanMove)
+            {
+                Vector2Int directionVector = GetDirectionVector(direction);
+                Vector2Int nextPosition = currentPosition + directionVector;
+                int newDirectionChanges = cameFrom[currentPosition].directionChanges;
+
+                if (currentPosition != previousPosition && directionVector != (currentPosition - previousPosition))
+                {
+                    newDirectionChanges++;
+                }
+
+                while (IsPositionValid(cellEntity, hole, nextPosition, validContentTypes))
+                {
+                    if (!visited.Contains(nextPosition))
+                    {
+                        bool isValid = shouldAlternate && validContentTypes != null
+                            ? IsPositionValid(cellEntity, hole, nextPosition, validContentTypes, validContentTypes[newDirectionChanges % validContentTypes.Count])
+                            : IsPositionValid(cellEntity, hole, nextPosition, validContentTypes);
+
+                        if (isValid)
+                        {
+                            priorityQueue.Add((newDirectionChanges, Vector2Int.Distance(nextPosition, targetPosition), nextPosition, currentPosition));
+                            cameFrom[nextPosition] = (currentPosition, newDirectionChanges);
+                            visited.Add(nextPosition);
+
+                            float distanceToTarget = Vector2Int.Distance(nextPosition, targetPosition);
+                            if (distanceToTarget < closestDistance)
+                            {
+                                farthestReachable = nextPosition;
+                                closestDistance = distanceToTarget;
+                            }
+                        }
+                    }
+
+                    nextPosition += directionVector;
+                }
+            }
+        }
+
+        List<Vector2Int> path = new List<Vector2Int>();
+        Vector2Int step = targetPosition;
+
+        Debug.Log("Farthest reachable: " + farthestReachable);
+
+        // If the target position is not reachable, use the farthest reachable position
+        if (!cameFrom.ContainsKey(step))
+        {
+            Debug.Log("Couldn't find a path to the target. Returning the path to the farthest reachable position.");
+            step = farthestReachable;
+            isUnblocked = false;
+        }
+
+        while (step != startPosition)
+        {
+            path.Add(step);
+            step = cameFrom[step].previousPosition;
+        }
+
+        path.Reverse();
+
+        return (path, isUnblocked);
+    }
+
+    private class PathComparer : IComparer<(int directionChanges, float distance, Vector2Int position, Vector2Int previousPosition)>
+    {
+        public int Compare((int directionChanges, float distance, Vector2Int position, Vector2Int previousPosition) x, (int directionChanges, float distance, Vector2Int position, Vector2Int previousPosition) y)
+        {
+            int result = x.directionChanges.CompareTo(y.directionChanges);
+            if (result == 0)
+            {
+                result = x.distance.CompareTo(y.distance);
+                if (result == 0)
+                {
+                    result = x.position.x.CompareTo(y.position.x);
+                    if (result == 0)
+                    {
+                        result = x.position.y.CompareTo(y.position.y);
+                    }
+                }
+            }
+            return result;
+        }
     }
 
     public static List<Vector2Int> FindAdjacentCellsWithEntities(Hole hole, CellEntity cellEntity)

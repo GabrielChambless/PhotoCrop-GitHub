@@ -9,6 +9,7 @@ public class CellEntity
     public CellEntityData.EntityTypes EntityType;
     public CellEntityData.EntityGoupTypes EntityGroupType;
     public List<GameStats.DirectionTypes> DirectionsCanMove = new List<GameStats.DirectionTypes>();
+    public bool CanChangeMovementDirection;
     public List<GameStats.CellContentTypes> CellTypesCanMoveOn = new List<GameStats.CellContentTypes>();
     public int MovementRange;
     public bool CanSharePosition;
@@ -33,7 +34,8 @@ public class CellEntity
     {
         EntityType = cellEntityData.EntityType;
         EntityGroupType = cellEntityData.EntityGoupType;
-        DirectionsCanMove = new List<GameStats.DirectionTypes>(cellEntityData.DirectionTypesCanMove);
+        DirectionsCanMove = new List<GameStats.DirectionTypes>(cellEntityData.DirectionsCanMove);
+        CanChangeMovementDirection = cellEntityData.CanChangeMovementDirection;
         CellTypesCanMoveOn = new List<GameStats.CellContentTypes>(cellEntityData.CellTypesCanMoveOn);
         MovementRange = cellEntityData.MovementRange;
         CanSharePosition = cellEntityData.CanSharePosition;
