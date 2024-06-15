@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2993cbf0f4f82af47bf3a751682e6f70, type: 3}
   m_Name: bish
   m_EditorClassIdentifier: 
-  entityObject: {fileID: 2137027274865235529, guid: dc348d9cf75e060498f0c25645ee7167,
+  entityObject: {fileID: 2237841612481449253, guid: a31651d17c0151a479b88425f670c6b9,
     type: 3}
   entityType: 0
   entityGroupType: 3
@@ -21,10 +21,11 @@ MonoBehaviour:
   cellTypesCanMoveOn: 
   shouldAlternateCellTypesWhenMoving: 0
   movementRange: 0
-  canSharePosition: 0
-  canBeRemovedByOtherEntities: 1
+  canSharePosition: 1
+  canBeRemovedByOtherEntities: 0
   tickType: 0
   tickOrder: 0
   tickActionType: 0
   tickActionTargetType: 0
   tickActionManualTarget: {x: 0, y: 0}
+  directionsCanAttack: 

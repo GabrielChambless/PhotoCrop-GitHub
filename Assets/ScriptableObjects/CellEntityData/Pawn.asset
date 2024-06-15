@@ -16,15 +16,16 @@ MonoBehaviour:
     type: 3}
   entityType: 1
   entityGroupType: 1
-  directionsCanMove: 0000000001000000020000000300000004000000050000000600000007000000
+  directionsCanMove: 04000000050000000600000007000000
   canChangeMovementDirection: 0
   cellTypesCanMoveOn: 01000000020000000300000005000000
   shouldAlternateCellTypesWhenMoving: 0
-  movementRange: 8
+  movementRange: 6
   canSharePosition: 0
-  canBeRemovedByOtherEntities: 1
+  canBeRemovedByOtherEntities: 0
   tickType: 1
   tickOrder: 0
   tickActionType: 3
   tickActionTargetType: 1
   tickActionManualTarget: {x: 1, y: 3}
+  directionsCanAttack: 0400000005000000

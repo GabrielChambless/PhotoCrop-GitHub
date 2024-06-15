@@ -30,12 +30,14 @@ public class CellEntityData : ScriptableObject
     [SerializeField] private int movementRange;
     [SerializeField] private bool canSharePosition;
     [SerializeField] private bool canBeRemovedByOtherEntities;
+    [SerializeField] private int targetedValue;
 
     [SerializeField] private TickManager.TickTypes tickType;
     [SerializeField] private int tickOrder;
     [SerializeField] private TickActionModels.TickActionTypes tickActionType;
     [SerializeField] private TickActionModels.TickActionTargetTypes tickActionTargetType;
     [SerializeField] private Vector2Int tickActionManualTarget;
+    [SerializeField] private List<GameStats.DirectionTypes> directionsCanAttack = new List<GameStats.DirectionTypes>();
 
     public GameObject EntityObject => entityObject;
     public EntityTypes EntityType => entityType;
@@ -47,10 +49,12 @@ public class CellEntityData : ScriptableObject
     public int MovementRange => movementRange;
     public bool CanSharePosition => canSharePosition;
     public bool CanBeRemovedByOtherEntities => canBeRemovedByOtherEntities;
+    public int TargetedValue => targetedValue;
 
     public TickManager.TickTypes TickType => tickType;
     public int TickOrder => tickOrder;
     public TickActionModels.TickActionTypes TickActionType => tickActionType;
     public TickActionModels.TickActionTargetTypes TickActionTargetType => tickActionTargetType;
     public Vector2Int TickActionManualTarget => tickActionManualTarget;
+    public List<GameStats.DirectionTypes> DirectionsCanAttack => directionsCanAttack;
 }
