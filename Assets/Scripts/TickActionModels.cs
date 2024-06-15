@@ -354,6 +354,7 @@ public static class TickActionModels
                             {
                                 LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                                 LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                                LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                             }
                         }
 
@@ -415,6 +416,7 @@ public static class TickActionModels
                             {
                                 LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                                 LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                                LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                             }
                         }
 
@@ -507,6 +509,7 @@ public static class TickActionModels
                     {
                         LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                        LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                     }
                 }
 
