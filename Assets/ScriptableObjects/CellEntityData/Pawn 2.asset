@@ -17,10 +17,12 @@ MonoBehaviour:
   entityType: 0
   entityGroupType: 1
   directionsCanMove: 
+  canChangeMovementDirection: 0
   cellTypesCanMoveOn: 
+  shouldAlternateCellTypesWhenMoving: 0
   movementRange: 0
   canSharePosition: 0
-  canBeRemovedByOtherEntities: 0
+  canBeRemovedByOtherEntities: 1
   tickType: 0
   tickOrder: 0
   tickActionType: 0

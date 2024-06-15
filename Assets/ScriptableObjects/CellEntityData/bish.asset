@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2993cbf0f4f82af47bf3a751682e6f70, type: 3}
-  m_Name: Pawn 1
+  m_Name: bish
   m_EditorClassIdentifier: 
   entityObject: {fileID: 2137027274865235529, guid: dc348d9cf75e060498f0c25645ee7167,
     type: 3}
   entityType: 0
   entityGroupType: 3
   directionsCanMove: 
+  canChangeMovementDirection: 0
   cellTypesCanMoveOn: 
+  shouldAlternateCellTypesWhenMoving: 0
   movementRange: 0
   canSharePosition: 0
   canBeRemovedByOtherEntities: 1

@@ -482,6 +482,94 @@ public static class TickActionModels
 
     public static List<Vector2Int> CalculatePossibleAttacks(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
     {
+        if (cellEntity.CanChangeMovementDirection)
+        {
+            return CalculatePossibleAttacksWithBFS(hole, cellEntity, validContentTypes, shouldAlternate);
+        }
+
+        return CalculatePossibleAttacksWithMinimalDirectionChanges(hole, cellEntity, validContentTypes, shouldAlternate);
+    }
+
+    private static List<Vector2Int> CalculatePossibleAttacksWithBFS(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
+    {
+        List<Vector2Int> possibleAttacks = new List<Vector2Int>();
+        int indexTracker = 0;
+        int movementRange = cellEntity.MovementRange;
+
+        Queue<(Vector2Int position, int distance)> queue = new Queue<(Vector2Int, int)>();
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+
+        queue.Enqueue((cellEntity.Position, 0));
+        visited.Add(cellEntity.Position);
+
+        while (queue.Count > 0)
+        {
+            var (currentPosition, currentDistance) = queue.Dequeue();
+
+            foreach (GameStats.DirectionTypes direction in cellEntity.DirectionsCanMove)
+            {
+                Vector2Int directionVector = GetDirectionVector(direction);
+                Vector2Int nextPosition = currentPosition + directionVector;
+                int nextDistance = currentDistance + 1;
+
+                if (nextDistance > movementRange)
+                {
+                    continue;
+                }
+
+                if (shouldAlternate && validContentTypes != null)
+                {
+                    if (!IsPositionValid(cellEntity, hole, nextPosition, validContentTypes, validContentTypes[indexTracker]))
+                    {
+                        continue;
+                    }
+
+                    indexTracker = (indexTracker + 1) % validContentTypes.Count;
+                }
+                else
+                {
+                    if (!IsPositionValid(cellEntity, hole, nextPosition, validContentTypes))
+                    {
+                        continue;
+                    }
+                }
+
+                if (!visited.Contains(nextPosition))
+                {
+                    visited.Add(nextPosition);
+
+                    int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == nextPosition);
+
+                    if (cellIndex != -1)
+                    {
+                        // Check if the cell contains entities that can be removed by other entities
+                        bool canBeRemovedByOtherEntities = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => x.CanBeRemovedByOtherEntities);
+
+                        if (canBeRemovedByOtherEntities)
+                        {
+                            possibleAttacks.Add(nextPosition);
+                            continue; // Stop exploring this path
+                        }
+
+                        // Check if there is an obstacle that cannot be passed through
+                        bool isBlockedByEntity = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => !x.CanBeRemovedByOtherEntities && !x.CanSharePosition);
+
+                        if (isBlockedByEntity)
+                        {
+                            continue; // Stop exploring this path
+                        }
+                    }
+
+                    queue.Enqueue((nextPosition, nextDistance));
+                }
+            }
+        }
+
+        return possibleAttacks;
+    }
+
+    private static List<Vector2Int> CalculatePossibleAttacksWithMinimalDirectionChanges(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
+    {
         List<Vector2Int> possibleAttacks = new List<Vector2Int>();
         int indexTracker = 0;
 
@@ -489,10 +577,12 @@ public static class TickActionModels
         {
             Vector2Int currentPosition = cellEntity.Position;
             Vector2Int directionVector = GetDirectionVector(direction);
+            int distanceTraveled = 0;
 
-            while (true)
+            while (distanceTraveled < cellEntity.MovementRange)
             {
                 currentPosition += directionVector;
+                distanceTraveled++;
 
                 if (shouldAlternate && validContentTypes != null)
                 {
@@ -513,18 +603,31 @@ public static class TickActionModels
 
                 int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == currentPosition);
 
-                // Check if at least one CellEntity in the cell can be removed by other entities
-                bool canBeRemovedByOtherEntities = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => x.CanBeRemovedByOtherEntities);
-
-                if (canBeRemovedByOtherEntities)
+                if (cellIndex != -1)
                 {
-                    possibleAttacks.Add(currentPosition);
+                    // Check if the cell contains entities that can be removed by other entities
+                    bool canBeRemovedByOtherEntities = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => x.CanBeRemovedByOtherEntities);
+
+                    if (canBeRemovedByOtherEntities)
+                    {
+                        possibleAttacks.Add(currentPosition);
+                        break; // Stop exploring this path
+                    }
+
+                    // Check if there is an obstacle that cannot be passed through
+                    bool isBlockedByEntity = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => !x.CanBeRemovedByOtherEntities && !x.CanSharePosition);
+
+                    if (isBlockedByEntity)
+                    {
+                        break; // Stop exploring this path
+                    }
                 }
             }
         }
 
         return possibleAttacks;
     }
+
 
     public static List<Vector2Int> FindAdjacentCellsWithEntities(Hole hole, CellEntity cellEntity)
     {
@@ -556,7 +659,7 @@ public static class TickActionModels
     }
 
 
-    private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithBFS(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
+    private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithBFS(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
     {
         Queue<(Vector2Int position, int indexTracker)> queue = new Queue<(Vector2Int position, int indexTracker)>();
         Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
@@ -741,7 +844,7 @@ public static class TickActionModels
     //    return (path, isUnblocked);
     //}
 
-    private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithMinimalDirectionChanges(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes = null, bool shouldAlternate = false)
+    private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithMinimalDirectionChanges(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
     {
         var priorityQueue = new SortedSet<(int directionChanges, float distance, Vector2Int position, Vector2Int previousPosition)>(new PathComparer());
         Dictionary<Vector2Int, (Vector2Int previousPosition, int directionChanges)> cameFrom = new Dictionary<Vector2Int, (Vector2Int, int)>();
