@@ -20,7 +20,7 @@ MonoBehaviour:
   canChangeMovementDirection: 1
   cellTypesCanMoveOn: 01000000020000000300000005000000
   shouldAlternateCellTypesWhenMoving: 0
-  movementRange: 1
+  movementRange: 8
   canSharePosition: 0
   canBeRemovedByOtherEntities: 0
   targetedValue: 0

@@ -29,7 +29,7 @@ public class SettingsData : ScriptableObject
         Screen.SetResolution(preset.Width, preset.Height, preset.FullScreenMode);
         ResolutionIndex = index;
 
-        if (CameraController.Instance != null)
+        if (CameraController.Instance != null && GameStats.UsePixelation)
         {
             CameraController.Instance.SetPixelationTexture(preset.PixelationRenderTexture);
             GameStats.PixelationResolution = new Vector2Int(preset.PixelationRenderTexture.width, preset.PixelationRenderTexture.height);
