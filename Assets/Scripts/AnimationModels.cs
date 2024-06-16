@@ -46,6 +46,36 @@ public static class AnimationModels
         }
     }
 
+    public static IEnumerator DropCellEntities(float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
+    {
+        Vector3 offset = Vector3.forward * -15f;
+
+        for (int i = 0; i < LevelController.Instance.CellEntities.Count; i++)
+        {
+            Vector3 startPosition = LevelController.Instance.CellEntities[i].EntityObject.transform.position;
+            Vector3 endPosition = LevelController.Instance.CellEntities[i].EntityObject.transform.position - offset;
+
+            float elapsedTime = 0f;
+            float durationPerChild = duration / LevelController.Instance.CellEntities.Count;
+
+            while (elapsedTime < durationPerChild)
+            {
+                LevelController.Instance.CellEntities[i].EntityObject.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / durationPerChild);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            LevelController.Instance.CellEntities[i].EntityObject.transform.position = endPosition;
+
+            if (AudioController.Instance != null)
+            {
+                AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+            }
+
+            monoBehaviourInstance.StartCoroutine(BounceEffect(LevelController.Instance.CellEntities[i].EntityObject.transform, endPosition, bounceDuration));
+        }
+    }
+
     public static IEnumerator RestartLevel(GameObject holeObject, float duration)
     {
         Vector3 offset = Vector3.forward * 15f;
@@ -271,6 +301,34 @@ public static class AnimationModels
 
             yield return null;
         }
+    }
+
+    public static IEnumerator SetFundamentalShapesBoard(GameObject board, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
+    {
+        Vector3 offset = Vector3.forward * 10f;
+
+        board.transform.position += offset;
+
+        Vector3 startPosition = board.transform.position;
+        Vector3 endPosition = board.transform.position - offset;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            board.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        board.transform.position = endPosition;
+
+        if (AudioController.Instance != null)
+        {
+            AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+        }
+
+        monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform, endPosition, bounceDuration));
     }
 
     public static IEnumerator SetChessBoard(GameObject chessBoard, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)

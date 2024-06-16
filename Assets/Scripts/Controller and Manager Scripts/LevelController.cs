@@ -391,6 +391,13 @@ public class LevelController : MonoBehaviour
         switch (LevelSelectorController.Instance.SelectedLevelData.World)
         {
             case LevelData.WorldType.FundamentalShapes:
+
+                levelBoardObject.transform.localScale = new Vector3(LevelSelectorController.Instance.SelectedHoleData.GridSize.x, LevelSelectorController.Instance.SelectedHoleData.GridSize.y, levelBoardObject.transform.localScale.z);
+                float xOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.x % 2 == 0 ? 0.5f : 0f;
+                float yOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.y % 2 == 0 ? 0.5f : 0f;
+                levelBoardObject.transform.position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.position.z);
+                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 0.1f, this));
+
                 break;
             case LevelData.WorldType.Chess:
                 yield return StartCoroutine(AnimationModels.SetChessBoard(levelBoardObject, 2.5f, 0.1f, this));
@@ -407,7 +414,16 @@ public class LevelController : MonoBehaviour
         CurrentHole = newHole;
         currentHoleObject = newHoleObject;
 
+        Vector3 offset = Vector3.forward * -15f;
+
+        for (int i = 0; i < CellEntities.Count; i++)
+        {
+            CellEntities[i].EntityObject.transform.position += offset;
+        }
+
         yield return AnimationModels.DropHoleCells(currentHoleObject, 2.5f, 0.1f, this);
+
+        yield return AnimationModels.DropCellEntities(1f, 0.1f, this);
     }
 
     private void SetShapes()
