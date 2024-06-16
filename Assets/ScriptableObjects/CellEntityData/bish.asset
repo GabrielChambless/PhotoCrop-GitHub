@@ -15,7 +15,7 @@ MonoBehaviour:
   entityObject: {fileID: 2237841612481449253, guid: a31651d17c0151a479b88425f670c6b9,
     type: 3}
   entityType: 0
-  entityGroupType: 3
+  entityGroupType: 1
   directionsCanMove: 
   canChangeMovementDirection: 0
   cellTypesCanMoveOn: 
@@ -23,6 +23,7 @@ MonoBehaviour:
   movementRange: 0
   canSharePosition: 1
   canBeRemovedByOtherEntities: 0
+  targetedValue: 0
   tickType: 0
   tickOrder: 0
   tickActionType: 0

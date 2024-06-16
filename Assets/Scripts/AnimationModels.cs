@@ -142,7 +142,7 @@ public static class AnimationModels
         objectTransform.position = targetPos;
     }
 
-    public static IEnumerator RotateAndFlyAway(GameObject obj, Vector2 direction, float duration = 0.25f, float flyDistance = 1f)
+    public static IEnumerator TossInDirection(GameObject obj, Vector2 direction, float duration = 0.25f, float flyDistance = 1f)
     {
         Vector3 startPosition = obj.transform.position;
         Quaternion startRotation = obj.transform.rotation;
@@ -153,6 +153,7 @@ public static class AnimationModels
 
         // Determine the target rotation based on the direction
         Quaternion targetRotation;
+
         if (direction == Vector2.right)
         {
             targetRotation = startRotation * Quaternion.Euler(0, 0, -90);
@@ -165,9 +166,25 @@ public static class AnimationModels
         {
             targetRotation = Quaternion.Euler(0, startRotation.eulerAngles.y, startRotation.eulerAngles.z);
         }
-        else // direction == Vector2.down
+        else if (direction == Vector2.down)
         {
             targetRotation = Quaternion.Euler(-180, startRotation.eulerAngles.y, startRotation.eulerAngles.z);
+        }
+        else if (direction == new Vector2(1, 1)) // Up-Right
+        {
+            targetRotation = Quaternion.Euler(0, startRotation.eulerAngles.y, -45);
+        }
+        else if (direction == new Vector2(-1, 1)) // Up-Left
+        {
+            targetRotation = Quaternion.Euler(0, startRotation.eulerAngles.y, 45);
+        }
+        else if (direction == new Vector2(1, -1)) // Down-Right
+        {
+            targetRotation = Quaternion.Euler(0, startRotation.eulerAngles.y, -135);
+        }
+        else //(direction == new Vector2(-1, -1)) // Down-Left
+        {
+            targetRotation = Quaternion.Euler(0, startRotation.eulerAngles.y, 135);
         }
 
         while (elapsedTime < duration)
@@ -214,7 +231,7 @@ public static class AnimationModels
 
         Vector3 startEulerAngles = obj.transform.eulerAngles;
 
-        Vector3 endEulerAngles = new Vector3(startEulerAngles.x + angleIncrements[Random.Range(0, angleIncrements.Length)] + 180f, 
+        Vector3 endEulerAngles = new Vector3(startEulerAngles.x + angleIncrements[Random.Range(0, angleIncrements.Length)] + 180f,
             startEulerAngles.y + angleIncrements[Random.Range(0, angleIncrements.Length)] + 180f, startEulerAngles.z);
 
         float distanceBetweenAnglesX = endEulerAngles.x - startEulerAngles.x;

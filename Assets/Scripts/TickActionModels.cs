@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using System.Linq;
 
@@ -21,7 +20,6 @@ public static class TickActionModels
         SameGroupEntity,
         Manual
     }
-
 
     public static void AssignEntityTickAction(CellEntity cellEntity)
     {
@@ -70,6 +68,7 @@ public static class TickActionModels
                     {
                         (List<Vector2Int>, bool) pathToEntity = CalculatePathToTarget(LevelController.Instance.CurrentHole, cellEntity, entity.Position, cellEntity.CellTypesCanMoveOn, cellEntity.ShouldAlternateCellTypesWhenMoving);
                         entityPaths.Add(entity, pathToEntity);
+                        Debug.Log("number of paths: " + entityPaths.Count);
                     }
                 }
                 break;
@@ -159,13 +158,13 @@ public static class TickActionModels
                     Debug.Log("No valid target found.");
                 }
 
-                if (selectedTarget != null && cellEntity.Position == selectedTarget.Position)
-                {
-                    Debug.Log("The CellEntity has reached its target position.");
-                    cellEntity.NumberOfTickActionsFailed = 0;
-                    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
-                    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
-                }
+                //if (selectedTarget != null && cellEntity.Position == selectedTarget.Position)
+                //{
+                //    Debug.Log("The CellEntity has reached its target position.");
+                //    cellEntity.NumberOfTickActionsFailed = 0;
+                //    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                //    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+                //}
                 break;
             case TickActionTargetTypes.Manual:
                 if (shortestPath != null && shortestPath.Count > 0)
@@ -207,7 +206,7 @@ public static class TickActionModels
                     }
                 }
 
-                if (cellEntity.Position == targetPosition)
+                if (cellEntity.Position == targetPosition && cellEntity.TickActionType != TickActionTypes.PrioritizeAttackOverMove)
                 {
                     Debug.Log("The CellEntity has reached its target position.");
                     cellEntity.NumberOfTickActionsFailed = 0;
@@ -228,17 +227,6 @@ public static class TickActionModels
                 cellEntity.NumberOfTickActionsFailed = 0;
                 TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
                 Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
-            }
-        }
-
-        foreach (var cell in LevelController.Instance.CurrentHole.HoleLayout)
-        {
-            if (cell.CellEntities.Count > 0)
-            {
-                foreach (var entity in cell.CellEntities)
-                {
-                    Debug.Log($"position with entity {entity.EntityObject.name}: {cell.Position}");
-                }
             }
         }
     }
@@ -346,17 +334,18 @@ public static class TickActionModels
                         cellEntity.Position = currentPosition;
 
                         cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
-                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Add(cellEntity);
 
                         for (int k = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Count - 1; k >= 0; k--)
                         {
                             if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k] != cellEntity && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].CanBeRemovedByOtherEntities)
                             {
-                                LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
-                                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                                LevelController.Instance.StartCoroutine(AnimationModels.TossInDirection(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                                 LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                             }
                         }
+
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Add(cellEntity);
 
                         cellEntity.NumberOfTickActionsFailed = 0;
                     }
@@ -366,13 +355,13 @@ public static class TickActionModels
                     Debug.Log("No valid target found.");
                 }
 
-                if (selectedTarget != null && cellEntity.Position == selectedTarget.Position)
-                {
-                    Debug.Log("The CellEntity has reached its target position.");
-                    cellEntity.NumberOfTickActionsFailed = 0;
-                    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
-                    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
-                }
+                //if (selectedTarget != null && cellEntity.Position == selectedTarget.Position)
+                //{
+                //    Debug.Log("The CellEntity has reached its target position.");
+                //    cellEntity.NumberOfTickActionsFailed = 0;
+                //    TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
+                //    Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
+                //}
                 break;
             case TickActionTargetTypes.Manual:
                 if (shortestPath != null && shortestPath.Count > 0)
@@ -408,17 +397,18 @@ public static class TickActionModels
                         cellEntity.Position = currentPosition;
 
                         cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
-                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Add(cellEntity);
 
                         for (int k = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Count - 1; k >= 0; k--)
                         {
                             if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k] != cellEntity && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].CanBeRemovedByOtherEntities)
                             {
-                                LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
-                                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                                LevelController.Instance.StartCoroutine(AnimationModels.TossInDirection(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                                 LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                             }
                         }
+
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Add(cellEntity);
 
                         cellEntity.NumberOfTickActionsFailed = 0;
                     }
@@ -445,17 +435,6 @@ public static class TickActionModels
                 cellEntity.NumberOfTickActionsFailed = 0;
                 TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
                 Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
-            }
-        }
-
-        foreach (var cell in LevelController.Instance.CurrentHole.HoleLayout)
-        {
-            if (cell.CellEntities.Count > 0)
-            {
-                foreach (var entity in cell.CellEntities)
-                {
-                    Debug.Log($"position with entity {entity.EntityObject.name}: {cell.Position}");
-                }
             }
         }
     }
@@ -501,17 +480,18 @@ public static class TickActionModels
                 cellEntity.Position = currentPosition;
 
                 cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == cellEntity.Position);
-                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Add(cellEntity);
 
                 for (int k = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Count - 1; k >= 0; k--)
                 {
                     if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k] != cellEntity && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].CanBeRemovedByOtherEntities)
                     {
-                        LevelController.Instance.StartCoroutine(AnimationModels.RotateAndFlyAway(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
-                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                        LevelController.Instance.StartCoroutine(AnimationModels.TossInDirection(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
                         LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                     }
                 }
+
+                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Add(cellEntity);
 
                 cellEntity.NumberOfTickActionsFailed = 0;
             }
@@ -520,13 +500,7 @@ public static class TickActionModels
         {
             Debug.Log("No valid attack. Will attempt to move to target.");
 
-            if (selectedTarget != null && cellEntity.Position == selectedTarget.Position)
-            {
-                Debug.Log("The CellEntity has reached its target position.");
-                cellEntity.NumberOfTickActionsFailed = 0;
-                TickManager.Instance.Unsubscribe(cellEntity, cellEntity.TickAction, cellEntity.TickType);
-                Debug.Log($"Unsubscribed Entity at: {cellEntity.Position}");
-            }
+            yield return MoveToTarget(cellEntity);
         }
     }
 
@@ -569,6 +543,7 @@ public static class TickActionModels
 
         return positionsWithEntities;
     }
+
 
     private static (CellEntity, List<Vector2Int>) CalculatePossibleAttacksWithBFS(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
     {
@@ -769,143 +744,6 @@ public static class TickActionModels
         return (null, null);
     }
 
-
-    //private static List<CellEntity> CalculatePossibleAttacksWithBFS(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
-    //{
-    //    List<CellEntity> entitiesAtPositions = new List<CellEntity>();
-    //    int indexTracker = 0;
-    //    int movementRange = cellEntity.MovementRange;
-
-    //    Queue<(Vector2Int position, int distance)> queue = new Queue<(Vector2Int, int)>();
-    //    HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-
-    //    queue.Enqueue((cellEntity.Position, 0));
-    //    visited.Add(cellEntity.Position);
-
-    //    while (queue.Count > 0)
-    //    {
-    //        var (currentPosition, currentDistance) = queue.Dequeue();
-
-    //        foreach (GameStats.DirectionTypes direction in cellEntity.DirectionsCanAttack)
-    //        {
-    //            Vector2Int directionVector = GetDirectionVector(direction);
-    //            Vector2Int nextPosition = currentPosition + directionVector;
-    //            int nextDistance = currentDistance + 1;
-
-    //            if (nextDistance > movementRange)
-    //            {
-    //                continue;
-    //            }
-
-    //            if (shouldAlternate && validContentTypes != null)
-    //            {
-    //                if (!IsPositionValid(cellEntity, hole, nextPosition, validContentTypes, validContentTypes[indexTracker]))
-    //                {
-    //                    continue;
-    //                }
-
-    //                indexTracker = (indexTracker + 1) % validContentTypes.Count;
-    //            }
-    //            else
-    //            {
-    //                if (!IsPositionValid(cellEntity, hole, nextPosition, validContentTypes))
-    //                {
-    //                    continue;
-    //                }
-    //            }
-
-    //            if (!visited.Contains(nextPosition))
-    //            {
-    //                visited.Add(nextPosition);
-
-    //                int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == nextPosition);
-
-    //                if (cellIndex != -1)
-    //                {
-    //                    // Check if the cell contains entities that can be removed by other entities
-    //                    var removableEntities = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Where(x => x.CanBeRemovedByOtherEntities).ToList();
-    //                    if (removableEntities.Any())
-    //                    {
-    //                        entitiesAtPositions.AddRange(removableEntities);
-    //                        continue; // Stop exploring this path
-    //                    }
-
-    //                    // Check if there is an obstacle that cannot be passed through
-    //                    bool isBlockedByEntity = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => !x.CanBeRemovedByOtherEntities && !x.CanSharePosition);
-
-    //                    if (isBlockedByEntity)
-    //                    {
-    //                        continue; // Stop exploring this path
-    //                    }
-    //                }
-
-    //                queue.Enqueue((nextPosition, nextDistance));
-    //            }
-    //        }
-    //    }
-
-    //    return entitiesAtPositions;
-    //}
-
-    //private static List<CellEntity> CalculatePossibleAttacksWithMinimalDirectionChanges(Hole hole, CellEntity cellEntity, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
-    //{
-    //    List<CellEntity> entitiesAtPositions = new List<CellEntity>();
-    //    int indexTracker = 0;
-
-    //    foreach (GameStats.DirectionTypes direction in cellEntity.DirectionsCanAttack)
-    //    {
-    //        Vector2Int currentPosition = cellEntity.Position;
-    //        Vector2Int directionVector = GetDirectionVector(direction);
-    //        int distanceTraveled = 0;
-
-    //        while (distanceTraveled < cellEntity.MovementRange)
-    //        {
-    //            currentPosition += directionVector;
-    //            distanceTraveled++;
-
-    //            if (shouldAlternate && validContentTypes != null)
-    //            {
-    //                if (!IsPositionValid(cellEntity, hole, currentPosition, validContentTypes, validContentTypes[indexTracker]))
-    //                {
-    //                    break;
-    //                }
-
-    //                indexTracker = (indexTracker + 1) % validContentTypes.Count;
-    //            }
-    //            else
-    //            {
-    //                if (!IsPositionValid(cellEntity, hole, currentPosition, validContentTypes))
-    //                {
-    //                    break;
-    //                }
-    //            }
-
-    //            int cellIndex = LevelController.Instance.CurrentHole.HoleLayout.FindIndex(holeCell => holeCell.Position == currentPosition);
-
-    //            if (cellIndex != -1)
-    //            {
-    //                // Check if the cell contains entities that can be removed by other entities
-    //                var removableEntities = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Where(x => x.CanBeRemovedByOtherEntities).ToList();
-    //                if (removableEntities.Any())
-    //                {
-    //                    entitiesAtPositions.AddRange(removableEntities);
-    //                    break; // Stop exploring this path
-    //                }
-
-    //                // Check if there is an obstacle that cannot be passed through
-    //                bool isBlockedByEntity = LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Any(x => !x.CanBeRemovedByOtherEntities && !x.CanSharePosition);
-
-    //                if (isBlockedByEntity)
-    //                {
-    //                    break; // Stop exploring this path
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    return entitiesAtPositions;
-    //}
-
     private static (List<Vector2Int> path, bool isUnblocked) CalculatePathWithBFS(Hole hole, CellEntity cellEntity, Vector2Int targetPosition, List<GameStats.CellContentTypes> validContentTypes, bool shouldAlternate)
     {
         Queue<(Vector2Int position, int indexTracker)> queue = new Queue<(Vector2Int position, int indexTracker)>();
@@ -978,13 +816,9 @@ public static class TickActionModels
         List<Vector2Int> path = new List<Vector2Int>();
         Vector2Int step = targetPosition;
 
-
-        Debug.Log("Farthest reachable: " + farthestReachable);
-
         // If the target position is not reachable, use the farthest reachable position
         if (!cameFrom.ContainsKey(step))
         {
-            Debug.Log("Couldn't find a path to the target. Returning the path to the farthest reachable position.");
             step = farthestReachable;
             isUnblocked = false;
         }
@@ -1070,12 +904,9 @@ public static class TickActionModels
         List<Vector2Int> path = new List<Vector2Int>();
         Vector2Int step = targetPosition;
 
-        Debug.Log("Farthest reachable: " + farthestReachable);
-
         // If the target position is not reachable, use the farthest reachable position
         if (!cameFrom.ContainsKey(step))
         {
-            Debug.Log("Couldn't find a path to the target. Returning the path to the farthest reachable position.");
             step = farthestReachable;
             isUnblocked = false;
         }
@@ -1231,7 +1062,12 @@ public static class TickActionModels
         {
             return new Vector2(Mathf.Sign(difference.x), 0); // Horizontal direction
         }
+        else if (Mathf.Abs(difference.x) < Mathf.Abs(difference.y))
+        {
+            return new Vector2(0, Mathf.Sign(difference.y)); // Vertical direction
+        }
 
-        return new Vector2(0, Mathf.Sign(difference.y)); // Vertical direction
+        // Mathf.Abs(difference.x) == Mathf.Abs(difference.y)
+        return new Vector2(Mathf.Sign(difference.x), Mathf.Sign(difference.y)); // Diagonal direction
     }
 }
