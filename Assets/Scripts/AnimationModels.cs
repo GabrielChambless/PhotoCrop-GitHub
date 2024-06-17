@@ -305,50 +305,63 @@ public static class AnimationModels
 
     public static IEnumerator SetFundamentalShapesBoard(GameObject board, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
     {
-        Vector3 offset = Vector3.forward * 10f;
+        Vector3 offset = Vector3.forward * 15f;
 
-        board.transform.position += offset;
+        for (int i = 0; i < board.transform.childCount; i++)
+        {
+            Transform child = board.transform.GetChild(i);
+            child.position += offset;
+        }
 
-        Vector3 startPosition = board.transform.position;
-        Vector3 endPosition = board.transform.position - offset;
+        Vector3 startPosition = board.transform.GetChild(0).position;
+        Vector3 endPosition = board.transform.GetChild(0).position - offset;
 
         float elapsedTime = 0f;
 
-        while (elapsedTime < duration)
+        while (elapsedTime < 1f)
         {
-            board.transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / duration);
+            board.transform.GetChild(0).position = Vector3.Lerp(startPosition, endPosition, elapsedTime / 1f);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        board.transform.position = endPosition;
+        board.transform.GetChild(0).position = endPosition;
 
         if (AudioController.Instance != null)
         {
             AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
         }
 
-        monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform, endPosition, bounceDuration));
+        monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform.GetChild(0), endPosition, bounceDuration));
+        monoBehaviourInstance.StartCoroutine(SetBoardAndChildren(board, duration, bounceDuration, monoBehaviourInstance, true));
     }
 
-    public static IEnumerator SetChessBoard(GameObject chessBoard, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
+    public static IEnumerator SetBoardAndChildren(GameObject boardWithChildren, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance, bool excludeFirstChild = false)
     {
-        Vector3 offset = Vector3.forward * 10f;
+        Vector3 offset = Vector3.forward * 15f;
 
-        for (int i = 0; i < chessBoard.transform.childCount; i++)
+        if (!excludeFirstChild)
         {
-            Transform child = chessBoard.transform.GetChild(i);
-            child.position += offset;
+            for (int i = 0; i < boardWithChildren.transform.childCount; i++)
+            {
+                Transform child = boardWithChildren.transform.GetChild(i);
+                child.position += offset;
+            }
         }
 
-        for (int i = 0; i < chessBoard.transform.childCount; i++)
+        for (int i = 0; i < boardWithChildren.transform.childCount; i++)
         {
-            Transform child = chessBoard.transform.GetChild(i);
+            if (excludeFirstChild && i == 0)
+            {
+                continue;
+            }
+
+            Transform child = boardWithChildren.transform.GetChild(i);
             Vector3 startPosition = child.position;
             Vector3 endPosition = child.position - offset;
 
             float elapsedTime = 0f;
-            float durationPerChild = duration / chessBoard.transform.childCount;
+            float durationPerChild = duration / boardWithChildren.transform.childCount;
 
             while (elapsedTime < durationPerChild)
             {

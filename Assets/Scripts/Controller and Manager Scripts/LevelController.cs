@@ -88,7 +88,11 @@ public class LevelController : MonoBehaviour
 
         if (!CropController.CropIsActive && isMovingCurrentShape && currentShapeObject != null && !inCoroutine)
         {
-            targetPosition = new Vector3(Targeting.CurrentMouseGridPosition.x, Targeting.CurrentMouseGridPosition.y, -1f);
+            float clampedX = Mathf.Clamp(Targeting.CurrentMouseGridPosition.x, 0, CurrentHole.GridSize.x - 1);
+            float clampedY = Mathf.Clamp(Targeting.CurrentMouseGridPosition.y, 0, CurrentHole.GridSize.y - 1);
+
+            Vector3 targetPosition = new Vector3(clampedX, clampedY, -1f);
+
             MoveAndSnap(currentShapeObject.transform, targetPosition);
         }
 
@@ -97,7 +101,12 @@ public class LevelController : MonoBehaviour
             CropController.Instance.SetCropDimensions(currentShape.Dimensions);
 
             isMovingCurrentShape = !isMovingCurrentShape;
-            currentShapeObject.transform.position = new Vector3(Targeting.CurrentMouseGridPosition.x, Targeting.CurrentMouseGridPosition.y, -1f);
+
+            float clampedX = Mathf.Clamp(Targeting.CurrentMouseGridPosition.x, 0, CurrentHole.GridSize.x - 1);
+            float clampedY = Mathf.Clamp(Targeting.CurrentMouseGridPosition.y, 0, CurrentHole.GridSize.y - 1);
+
+            currentShapeObject.transform.position = new Vector3(clampedX, clampedY, -1f);
+
             CropController.CropIsActive = !CropController.CropIsActive;
 
             CropController.Instance.ToggleCropController();
@@ -107,9 +116,10 @@ public class LevelController : MonoBehaviour
             {
                 CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle2);
             }
-            else if (currentAnglePreference != CameraController.CameraAngles.Angle2)
+            else //if (currentAnglePreference != CameraController.CameraAngles.Angle2)
             {
-                CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle1);
+                //CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle1);
+                CameraController.Instance.MoveToCameraAngle(currentAnglePreference);
             }
         }
         else if (Input.GetKeyDown(KeyCode.X) && CropController.CropIsActive && !isMovingCurrentShape && currentShapeObject != null && !inCoroutine && !CropController.InCoroutine)
@@ -368,6 +378,9 @@ public class LevelController : MonoBehaviour
 
         switch (worldType)
         {
+            case LevelData.WorldType.FundamentalShapes:
+                zPosition = 0f;
+                break;
             case LevelData.WorldType.Chess:
                 zPosition = 0.26f;
                 break;
@@ -391,16 +404,14 @@ public class LevelController : MonoBehaviour
         switch (LevelSelectorController.Instance.SelectedLevelData.World)
         {
             case LevelData.WorldType.FundamentalShapes:
-
-                levelBoardObject.transform.localScale = new Vector3(LevelSelectorController.Instance.SelectedHoleData.GridSize.x, LevelSelectorController.Instance.SelectedHoleData.GridSize.y, levelBoardObject.transform.localScale.z);
+                levelBoardObject.transform.GetChild(0).localScale = new Vector3(LevelSelectorController.Instance.SelectedHoleData.GridSize.x, LevelSelectorController.Instance.SelectedHoleData.GridSize.y, levelBoardObject.transform.GetChild(0).transform.localScale.z);
                 float xOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.x % 2 == 0 ? 0.5f : 0f;
                 float yOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.y % 2 == 0 ? 0.5f : 0f;
-                levelBoardObject.transform.position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.position.z);
-                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 0.1f, this));
-
+                levelBoardObject.transform.GetChild(0).position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.GetChild(0).position.z);
+                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 2.5f, 0.1f, this));
                 break;
             case LevelData.WorldType.Chess:
-                yield return StartCoroutine(AnimationModels.SetChessBoard(levelBoardObject, 2.5f, 0.1f, this));
+                yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 2.5f, 0.1f, this));
                 break;
         }
     }

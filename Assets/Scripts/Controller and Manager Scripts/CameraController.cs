@@ -18,16 +18,14 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Vector3 moveLimits = new Vector3(3f, 3f, 3f);
     [SerializeField] private float rotateSpeed = 7.5f;
 
-    public readonly Vector3 CameraRotation1 = new Vector3(-45f, -30f, 35f);
-    public readonly Vector3 CameraRotation2 = new Vector3(-10f, -10f, 1.75f);
+    public Vector3 CameraRotation1 = new Vector3(-45f, -30f, 35f);
+    public Vector3 CameraRotation2 = new Vector3(-10f, -10f, 1.75f);
 
-    public readonly Vector3 CameraPosition1 = new Vector3(9.3f, -8.1f, -10f);
-    public readonly Vector3 CameraPosition2 = new Vector3(6.2f, 2.75f, -10f);
+    public Vector3 CameraPosition1;
+    public Vector3 CameraPosition2;
 
     private Camera currentCamera;
-    //private Texture currentPixelationTexture;
     private CameraAngles currentCameraAngle = CameraAngles.Angle1;
-    private Vector3 cameraOffset = new Vector3(10f, -7f, -10f);
 
     private Quaternion targetRotation;
     private Vector3 targetPosition;
@@ -47,7 +45,20 @@ public class CameraController : MonoBehaviour
 
         currentCamera = GetComponent<Camera>();
         targetRotation = transform.rotation;
-        targetPosition = transform.position;
+       
+        if (LevelSelectorController.Instance != null)
+        {
+            targetPosition = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1) / 2f, 0f)
+                + transform.forward * -9;
+
+            CameraPosition1 = targetPosition;
+
+            Quaternion rotationQuaternion = Quaternion.Euler(CameraRotation2);
+            Vector3 forwardDirection = rotationQuaternion * Vector3.forward;
+
+            CameraPosition2 = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1) / 2f, 0f)
+                + forwardDirection * -9f;
+        }
 
         TogglePixelationEffect(GameStats.UsePixelation);
     }
@@ -65,11 +76,11 @@ public class CameraController : MonoBehaviour
             currentCamera.orthographic = !currentCamera.orthographic;
         }
 
-        if (!isTransitioning && !CropController.CropIsActive && LevelController.Instance != null && !LevelController.Instance.IsSettingUpLevel)
-        {
-            HandleCameraMovement();
-            return;
-        }
+        //if (!isTransitioning && !CropController.CropIsActive && LevelController.Instance != null && !LevelController.Instance.IsSettingUpLevel)
+        //{
+        //    HandleCameraMovement();
+        //    return;
+        //}
 
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
         transform.position = Vector3.Lerp(transform.position, targetPosition, rotateSpeed * Time.deltaTime);
@@ -107,10 +118,10 @@ public class CameraController : MonoBehaviour
 
     public void MoveToCameraAngle(CameraAngles cameraAngle)
     {
-        if (currentCameraAngle == cameraAngle && !CropController.CropIsActive)
-        {
-            return;
-        }
+        //if (currentCameraAngle == cameraAngle && !CropController.CropIsActive)
+        //{
+        //    return;
+        //}
 
         switch (cameraAngle)
         {
@@ -118,11 +129,9 @@ public class CameraController : MonoBehaviour
                 currentCameraAngle = CameraAngles.Angle1;
                 targetRotation = Quaternion.Euler(CameraRotation1);
                 targetPosition = CameraPosition1;
-                cameraOffset = CameraPosition1;
                 if (CropController.CropIsActive)
                 {
                     targetPosition = new Vector3(CropController.Instance.transform.position.x + 1.5f, CropController.Instance.transform.position.y - 1.5f, targetPosition.z);
-                    cameraOffset = targetPosition;
                 }
                 isTransitioning = true;
                 break;
@@ -130,11 +139,9 @@ public class CameraController : MonoBehaviour
                 currentCameraAngle = CameraAngles.Angle2;
                 targetRotation = Quaternion.Euler(CameraRotation2);
                 targetPosition = CameraPosition2;
-                cameraOffset = CameraPosition2;
                 if (CropController.CropIsActive)
                 {
                     targetPosition = new Vector3(CropController.Instance.transform.position.x + 1.5f, CropController.Instance.transform.position.y - 1.5f, targetPosition.z);
-                    cameraOffset = targetPosition;
                 }
                 isTransitioning = true;
                 break;
@@ -153,24 +160,30 @@ public class CameraController : MonoBehaviour
 
     private void HandleCameraMovement()
     {
-        Vector3 moveDirection = Vector3.zero;
+        //Vector3 moveDirection = Vector3.zero;
 
-        if (Input.mousePosition.x >= Screen.width - edgeThreshold)
-            moveDirection.x = 1;
-        if (Input.mousePosition.x <= edgeThreshold)
-            moveDirection.x = -1;
-        if (Input.mousePosition.y >= Screen.height - edgeThreshold)
-            moveDirection.y = 1;
-        if (Input.mousePosition.y <= edgeThreshold)
-            moveDirection.y = -1;
+        //if (Input.mousePosition.x >= Screen.width - edgeThreshold)
+        //    moveDirection.x = 1;
+        //if (Input.mousePosition.x <= edgeThreshold)
+        //    moveDirection.x = -1;
+        //if (Input.mousePosition.y >= Screen.height - edgeThreshold)
+        //    moveDirection.y = 1;
+        //if (Input.mousePosition.y <= edgeThreshold)
+        //    moveDirection.y = -1;
 
-        Vector3 targetPosition = transform.position + moveDirection;
+        //Vector3 targetPosition = transform.position + moveDirection;
 
-        targetPosition.x = Mathf.Clamp(targetPosition.x, cameraOffset.x - moveLimits.x, cameraOffset.x + moveLimits.x);
-        targetPosition.y = Mathf.Clamp(targetPosition.y, cameraOffset.y - moveLimits.y, cameraOffset.y + moveLimits.y);
-        targetPosition.z = Mathf.Clamp(targetPosition.z, cameraOffset.z - moveLimits.z, cameraOffset.z + moveLimits.z);
+        //targetPosition.x = Mathf.Clamp(targetPosition.x, cameraOffset.x - moveLimits.x, cameraOffset.x + moveLimits.x);
+        //targetPosition.y = Mathf.Clamp(targetPosition.y, cameraOffset.y - moveLimits.y, cameraOffset.y + moveLimits.y);
+        //targetPosition.z = Mathf.Clamp(targetPosition.z, cameraOffset.z - moveLimits.z, cameraOffset.z + moveLimits.z);
 
-        transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+        float clampedX = Mathf.Clamp(Targeting.CurrentMouseGridPosition.x, 0, LevelController.Instance.CurrentHole.GridSize.x - 1);
+        float clampedY = Mathf.Clamp(Targeting.CurrentMouseGridPosition.y, 0, LevelController.Instance.CurrentHole.GridSize.y - 1);
+
+        Vector3 newPosition = new Vector3(clampedX, clampedY, 0) 
+            + new Vector3(targetPosition.x - ((LevelController.Instance.CurrentHole.GridSize.x - 1)/ 2f), targetPosition.y - ((LevelController.Instance.CurrentHole.GridSize.y - 1) / 2f), -10f);
+
+        transform.position = Vector3.Lerp(transform.position, newPosition, smoothSpeed * Time.deltaTime);
     }
 
     IEnumerator LerpOrthographicCameraSize(Camera camera, float initialSize, float finalSize, float time)
