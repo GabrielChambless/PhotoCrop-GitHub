@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shapePhotoObject: {fileID: 8449703349948774947, guid: f2fe1daf34521ea4cab51b508be244a4,
     type: 3}
-  distanceToLerp: 2
+  distanceToLerp: 1
   lerpDuration: 0.2
   originalOffset: 0.2
 --- !u!1 &2023695715423229191

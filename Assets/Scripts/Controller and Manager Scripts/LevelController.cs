@@ -408,7 +408,7 @@ public class LevelController : MonoBehaviour
                 float xOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.x % 2 == 0 ? 0.5f : 0f;
                 float yOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.y % 2 == 0 ? 0.5f : 0f;
                 levelBoardObject.transform.GetChild(0).position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.GetChild(0).position.z);
-                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 2.5f, 0.1f, this));
+                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 2.5f, 0.1f, this));
                 break;
             case LevelData.WorldType.Chess:
                 yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 2.5f, 0.1f, this));
@@ -449,6 +449,10 @@ public class LevelController : MonoBehaviour
             {
                 currentShape = newShape;
                 currentShapeObject = newShapeObject;
+
+                float xOffset = CurrentHole.GridSize.x % 2 == 0 ? 0f : 0.5f;
+                float yOffset = CurrentHole.GridSize.y % 2 == 0 ? 0f : 0.5f;
+                currentShapeObject.transform.position = new Vector3(CurrentHole.GridSize.x / 2f - xOffset, CurrentHole.GridSize.y / 2f - yOffset, -10f);
             }
             else
             {

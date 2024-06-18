@@ -303,7 +303,7 @@ public static class AnimationModels
         }
     }
 
-    public static IEnumerator SetFundamentalShapesBoard(GameObject board, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
+    public static IEnumerator SetFundamentalShapesBoard(GameObject board, float boardDuration, float childrenDuration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
     {
         Vector3 offset = Vector3.forward * 15f;
 
@@ -320,7 +320,7 @@ public static class AnimationModels
 
         while (elapsedTime < 1f)
         {
-            board.transform.GetChild(0).position = Vector3.Lerp(startPosition, endPosition, elapsedTime / 1f);
+            board.transform.GetChild(0).position = Vector3.Lerp(startPosition, endPosition, elapsedTime / boardDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -332,8 +332,16 @@ public static class AnimationModels
             AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
         }
 
+        for (int k = 0; k < board.transform.GetChild(0).childCount; k++)
+        {
+            if (board.transform.GetChild(0).transform.GetChild(k).TryGetComponent(out ObjectAnimator objectAnimator))
+            {
+                objectAnimator.StartAnimating = true;
+            }
+        }
+
         monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform.GetChild(0), endPosition, bounceDuration));
-        monoBehaviourInstance.StartCoroutine(SetBoardAndChildren(board, duration, bounceDuration, monoBehaviourInstance, true));
+        monoBehaviourInstance.StartCoroutine(SetBoardAndChildren(board, childrenDuration, bounceDuration, monoBehaviourInstance, true));
     }
 
     public static IEnumerator SetBoardAndChildren(GameObject boardWithChildren, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance, bool excludeFirstChild = false)
@@ -375,6 +383,14 @@ public static class AnimationModels
             if (AudioController.Instance != null)
             {
                 AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+            }
+
+            for (int k = 0; k < child.transform.childCount; k++)
+            {
+                if (child.transform.GetChild(k).TryGetComponent(out ObjectAnimator objectAnimator))
+                {
+                    objectAnimator.StartAnimating = true;
+                }
             }
 
             monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration));

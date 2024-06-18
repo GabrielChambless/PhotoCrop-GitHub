@@ -169,11 +169,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.5
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.5
+  orthographic size: 6
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -258,6 +258,10 @@ MonoBehaviour:
   edgeThreshold: 400
   moveLimits: {x: 3, y: 3, z: 3}
   rotateSpeed: 7
+  CameraRotation1: {x: -45, y: -30, z: 35}
+  CameraRotation2: {x: -10, y: -10, z: 1.75}
+  CameraPosition1: {x: 0, y: 0, z: 0}
+  CameraPosition2: {x: 0, y: 0, z: 0}
 --- !u!1 &9011012509499440151
 GameObject:
   m_ObjectHideFlags: 0

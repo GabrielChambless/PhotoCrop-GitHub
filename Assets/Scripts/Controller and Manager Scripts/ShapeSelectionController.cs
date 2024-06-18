@@ -20,7 +20,7 @@ public class ShapeSelectionController : MonoBehaviour
     public static ShapeSelectionController Instance { get; private set; }
 
     [SerializeField] private GameObject shapePhotoObject;
-    [SerializeField] private float distanceToLerp = 2f;
+    [SerializeField] private float distanceToLerp = 1f;
     [SerializeField] private float lerpDuration = 0.4f;
     [SerializeField] private float originalOffset = 0.2f;
     private Vector3 originalShapePosition;
@@ -204,13 +204,14 @@ public class ShapeSelectionController : MonoBehaviour
     private GameObject InstantiateShapePhotoObject(float xOffset, float yOffset, float zOffset)
     {
         GameObject photo = Instantiate(shapePhotoObject);
+        photo.transform.position = CameraController.Instance.CameraPosition1;
         photo.transform.eulerAngles = CameraController.Instance.CameraRotation1;
 
         Vector3 localOffset = photo.transform.TransformDirection(new Vector3(xOffset, yOffset, zOffset));
         photo.transform.localPosition += localOffset;
 
         photo.transform.SetParent(Camera.main.transform);
-        photo.transform.localPosition = new Vector3(photo.transform.localPosition.x, photo.transform.localPosition.y - 2f, photo.transform.localPosition.z - 7);
+        photo.transform.localPosition = new Vector3(photo.transform.localPosition.x, photo.transform.localPosition.y - 5.25f, photo.transform.localPosition.z + 1);
         originalShapePosition = photo.transform.localPosition;
 
         return photo;

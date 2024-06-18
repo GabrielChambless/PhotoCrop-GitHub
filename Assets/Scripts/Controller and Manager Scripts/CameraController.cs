@@ -46,7 +46,7 @@ public class CameraController : MonoBehaviour
         currentCamera = GetComponent<Camera>();
         targetRotation = transform.rotation;
        
-        if (LevelSelectorController.Instance != null)
+        if (LevelSelectorController.Instance != null && LevelSelectorController.Instance.SelectedHoleData != null)
         {
             targetPosition = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1) / 2f, 0f)
                 + transform.forward * -9;

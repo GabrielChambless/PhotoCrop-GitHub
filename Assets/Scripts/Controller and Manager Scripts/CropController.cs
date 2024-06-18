@@ -142,12 +142,13 @@ public class CropController : MonoBehaviour
         // TODO; add or remove this?
         if (CropIsActive)
         {
-            CameraController.Instance.ChangeOrthographicCameraSize(Camera.main, 5.5f, 4f, 0.4f);
+            CameraController.Instance.ChangeOrthographicCameraSize(Camera.main, 6f, 4f, 0.4f);
             return;
         }
 
-        CameraController.Instance.ChangeOrthographicCameraSize(Camera.main, 4f, 5.5f, 0.4f);
+        CameraController.Instance.ChangeOrthographicCameraSize(Camera.main, 4f, 6f, 0.4f);
     }
+
     public void UpdateCropLayout()
     {
         cropLayout.Clear();
