@@ -635,7 +635,6 @@ GameObject:
   - component: {fileID: 2330607304685436357}
   - component: {fileID: 1654277424472991250}
   - component: {fileID: 1888904162240061509}
-  - component: {fileID: 1234234250884943242}
   m_Layer: 0
   m_Name: Top Cube
   m_TagString: Untagged
@@ -665,7 +664,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7130833291501107078}
-  m_Mesh: {fileID: -5495902117074765545, guid: 43c1647d9b994e64d84752a77400a8a3, type: 3}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1888904162240061509
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -708,30 +707,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1234234250884943242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7130833291501107078}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cbb44fe11a97d148a90129a08c3576d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentAnimations: 01000000
-  rotationAngle: {x: 0, y: 90, z: 0}
-  rotationSpeed: 5
-  rotationInterval: 4
-  rotationDurationIfInterval: 0.5
-  hoverStartOffset: 1
-  hoverRange: 0.5
-  hoverSpeed: 2
-  startColor: {r: 1, g: 1, b: 1, a: 1}
-  endColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  colorPulsateSpeed: 0.5
-  StartAnimating: 0
 --- !u!1 &7917736721866645554
 GameObject:
   m_ObjectHideFlags: 0

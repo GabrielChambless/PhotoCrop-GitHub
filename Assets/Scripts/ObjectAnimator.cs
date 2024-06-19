@@ -7,9 +7,10 @@ public class ObjectAnimator : MonoBehaviour
     public enum AnimationTypes
     {
         None,
-        RotateObject,
-        HoverObject,
-        ColorPulsate
+        Rotate,
+        Hover,
+        ColorPulsate,
+        MoveBackAndForth
     }
 
     [SerializeField] private List<AnimationTypes> currentAnimations;
@@ -19,7 +20,6 @@ public class ObjectAnimator : MonoBehaviour
     [SerializeField] private float rotationInterval = 0f;
     [SerializeField] private float rotationDurationIfInterval = 0.5f;
 
-
     [SerializeField] private float hoverStartOffset = 1f;
     [SerializeField] private float hoverRange = 0.5f;
     [SerializeField] private float hoverSpeed = 2f;
@@ -27,6 +27,9 @@ public class ObjectAnimator : MonoBehaviour
     [SerializeField] private Color startColor = Color.white;
     [SerializeField] private Color endColor = Color.yellow;
     [SerializeField] private float colorPulsateSpeed = 0.5f;
+
+    [SerializeField] private Vector3 moveBackAndForthPosition;
+    [SerializeField] private float moveBackAndForthSpeed = 2f;
 
     public bool StartAnimating;
     private Vector3 originalLocalPosition;
@@ -41,6 +44,10 @@ public class ObjectAnimator : MonoBehaviour
 
     private Renderer objectRenderer;
     private float colorTimer;
+
+    private bool movingToTarget = true;
+    private float moveProgress = 0f;
+
 
     void Start()
     {
@@ -60,20 +67,23 @@ public class ObjectAnimator : MonoBehaviour
         {
             switch (animation)
             {
-                case AnimationTypes.RotateObject:
-                    RotateObject();
+                case AnimationTypes.Rotate:
+                    Rotate();
                     break;
-                case AnimationTypes.HoverObject:
-                    HoverObject();
+                case AnimationTypes.Hover:
+                    Hover();
                     break;
                 case AnimationTypes.ColorPulsate:
                     ColorPulsate();
+                    break;
+                case AnimationTypes.MoveBackAndForth:
+                    MoveBackAndForth();
                     break;
             }
         }
     }
 
-    private void RotateObject()
+    private void Rotate()
     {
         if (rotationInterval > 0f)
         {
@@ -111,7 +121,7 @@ public class ObjectAnimator : MonoBehaviour
         transform.rotation = endRotation;
     }
 
-    private void HoverObject()
+    private void Hover()
     {
         if (!hasReachedHoverStartPosition)
         {
@@ -142,5 +152,31 @@ public class ObjectAnimator : MonoBehaviour
         colorTimer += Time.deltaTime * colorPulsateSpeed;
         float lerpFactor = Mathf.PingPong(colorTimer, 1.0f);
         objectRenderer.material.color = Color.Lerp(startColor, endColor, lerpFactor);
+    }
+
+    private void MoveBackAndForth()
+    {
+        moveProgress += Time.deltaTime * moveBackAndForthSpeed;
+
+        if (movingToTarget)
+        {
+            transform.localPosition = Vector3.Lerp(originalLocalPosition, moveBackAndForthPosition, moveProgress);
+
+            if (moveProgress >= 1f)
+            {
+                movingToTarget = false;
+                moveProgress = 0f;
+            }
+
+            return;
+        }
+
+        transform.localPosition = Vector3.Lerp(moveBackAndForthPosition, originalLocalPosition, moveProgress);
+
+        if (moveProgress >= 1f)
+        {
+            movingToTarget = true;
+            moveProgress = 0f;
+        }
     }
 }
