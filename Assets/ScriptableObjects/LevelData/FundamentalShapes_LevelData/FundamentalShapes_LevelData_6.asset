@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   world: 0
   worldLevelNumber: 6
-  levelBoardObject: {fileID: 8094515671406979978, guid: 1be677029ad4abe4ca3eeb88610b6e65,
+  levelBoardObject: {fileID: 8094515671406979978, guid: 55ca5479c00c6fa4ebb58faf17b64d9c,
     type: 3}
   holeData: {fileID: 11400000, guid: 18bde05095cb72c428c4842a6bb6d65e, type: 2}
   shapeDataList:
@@ -24,6 +24,6 @@ MonoBehaviour:
   levelGoals:
   - goalType: 0
     description: 
-    isCompleted: 0
+    isCompleted: 1
     shapeLimit: 0
     cropLimit: 0
