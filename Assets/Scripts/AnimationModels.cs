@@ -346,7 +346,7 @@ public static class AnimationModels
 
     public static IEnumerator SetBoardAndChildren(GameObject boardWithChildren, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance, bool excludeFirstChild = false)
     {
-        Vector3 offset = Vector3.forward * 15f;
+        Vector3 offset = Vector3.forward * -15f;
 
         if (!excludeFirstChild)
         {
