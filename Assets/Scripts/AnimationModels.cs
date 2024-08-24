@@ -42,7 +42,7 @@ public static class AnimationModels
                 AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
             }
 
-            monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration));
+            monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration, bounceOffset));
         }
     }
 
@@ -72,7 +72,7 @@ public static class AnimationModels
                 AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
             }
 
-            monoBehaviourInstance.StartCoroutine(BounceEffect(LevelController.Instance.CellEntities[i].EntityObject.transform, endPosition, bounceDuration));
+            monoBehaviourInstance.StartCoroutine(BounceEffect(LevelController.Instance.CellEntities[i].EntityObject.transform, endPosition, bounceDuration, bounceOffset));
         }
     }
 
@@ -340,7 +340,7 @@ public static class AnimationModels
             }
         }
 
-        monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform.GetChild(0), endPosition, bounceDuration));
+        monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform.GetChild(0), endPosition, bounceDuration, bounceOffset));
         monoBehaviourInstance.StartCoroutine(SetBoardAndChildren(board, childrenDuration, bounceDuration, monoBehaviourInstance, true));
     }
 
@@ -353,7 +353,8 @@ public static class AnimationModels
             for (int i = 0; i < boardWithChildren.transform.childCount; i++)
             {
                 Transform child = boardWithChildren.transform.GetChild(i);
-                child.position += offset;
+
+                child.position += i == 0 ? -offset : offset;
             }
         }
 
@@ -366,7 +367,7 @@ public static class AnimationModels
 
             Transform child = boardWithChildren.transform.GetChild(i);
             Vector3 startPosition = child.position;
-            Vector3 endPosition = child.position - offset;
+            Vector3 endPosition = i == 0 ? child.position + offset : child.position - offset;
 
             float elapsedTime = 0f;
             float durationPerChild = duration / boardWithChildren.transform.childCount;
@@ -393,11 +394,22 @@ public static class AnimationModels
                 }
             }
 
-            monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration));
+            monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration, bounceOffset));
+
+            if (i == 0)
+            {
+                for (int k = 0; k < child.transform.childCount; k++)
+                {
+                    Transform grandChild = child.transform.GetChild(k);
+                    //Vector3 grandChildEndPosition = grandChild.position - offset;
+
+                    monoBehaviourInstance.StartCoroutine(BounceEffect(grandChild, grandChild.position, bounceDuration, -bounceOffset));
+                }
+            }
         }
     }
 
-    private static IEnumerator BounceEffect(Transform child, Vector3 endPosition, float bounceDuration)
+    private static IEnumerator BounceEffect(Transform child, Vector3 endPosition, float bounceDuration, float bounceOffset)
     {
         Vector3 bouncePosition = endPosition + (Vector3.forward * bounceOffset);
         float elapsedTime = 0f;

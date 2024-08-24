@@ -32,7 +32,7 @@ public static class GameStats
 
     public static bool DebugMode;
 
-    public static bool UsePixelation = true;
+    public static bool UsePixelation = false;
     public static Vector2Int PixelationResolution = new Vector2Int(512, 288);
 
     public static List<LevelData> LevelsFinishedThisSession = new List<LevelData>();

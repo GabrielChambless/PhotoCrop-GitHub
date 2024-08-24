@@ -411,7 +411,7 @@ public class LevelController : MonoBehaviour
                 yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 2.5f, 0.1f, this));
                 break;
             case LevelData.WorldType.Chess:
-                yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 2.5f, 0.1f, this));
+                yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 5.5f, 0.1f, this));
                 break;
         }
     }
