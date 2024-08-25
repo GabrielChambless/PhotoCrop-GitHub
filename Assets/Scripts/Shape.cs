@@ -48,7 +48,7 @@ public class Shape
     }
 
 
-    public static (Shape, GameObject) CreateShapeAndObjectFromData(ShapeData shapeData, GameObject shapeCellPrefab)
+    public static (Shape, GameObject) CreateShapeAndObjectFromData(ShapeData shapeData)
     {
         Shape newShape = new Shape(shapeData);
 
@@ -58,38 +58,12 @@ public class Shape
         {
             if (cell.CellContentType != GameStats.CellContentTypes.Empty)
             {
-                GameObject shapeCellObject = Object.Instantiate(shapeCellPrefab);
+                GameObject shapeCellObject = Object.Instantiate(LevelSelectorController.Instance.SelectedLevelData.CellObjectPrefab(cell.CellContentType));
 
                 cell.ShapeCellObject = shapeCellObject;
 
                 shapeCellObject.transform.SetParent(newShapeObject.transform);
                 shapeCellObject.transform.localPosition = new Vector3(cell.Position.x, cell.Position.y, 0f);
-
-                // TODO; don't change materials like this
-                switch (cell.CellContentType)
-                {
-                    case GameStats.CellContentTypes.RedCell:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.red;
-                        break;
-                    case GameStats.CellContentTypes.GreenCell:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.green;
-                        break;
-                    case GameStats.CellContentTypes.BlueCell:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.blue;
-                        break;
-                    case GameStats.CellContentTypes.YellowCell:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.yellow;
-                        break;
-                    case GameStats.CellContentTypes.WhiteCell:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.white;
-                        break;
-                    case GameStats.CellContentTypes.BlackCell:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.black;
-                        break;
-                    default:
-                        shapeCellObject.GetComponent<Renderer>().material.color = Color.gray;
-                        break;
-                }
 
                 if (shapeData.CellEntityLayout[newShape.ShapeLayout.IndexOf(cell)] != null)
                 {

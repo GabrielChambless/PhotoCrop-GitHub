@@ -22,6 +22,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0a646a10221b4704fa84fdb9a82a9957, type: 2}
   - {fileID: 11400000, guid: 67e08d0ca13fa554dbc891d37be7434c, type: 2}
   - {fileID: 11400000, guid: aa95c80c467bca94c89946b5a3560a8f, type: 2}
+  wallCellPrefab: {fileID: 5730871099180204512, guid: 3fc087bb1f5f13348b9613ccdedccb9a,
+    type: 3}
+  redCellPrefab: {fileID: 5730871099180204512, guid: 2bc9285f4a8e13841a1510172d6c0059,
+    type: 3}
+  greenCellPrefab: {fileID: 5730871099180204512, guid: 085b03eb10afe7f48a2e98b2d499569e,
+    type: 3}
+  blueCellPrefab: {fileID: 5730871099180204512, guid: 76f478bbb6013bb4a84ba7050aa9e982,
+    type: 3}
+  yellowCellPrefab: {fileID: 5730871099180204512, guid: 0dcd36fbfd89a8247b8234aff7906581,
+    type: 3}
+  whiteCellPrefab: {fileID: 5730871099180204512, guid: 2ada074528446d04db3051c6acd16025,
+    type: 3}
+  blackCellPrefab: {fileID: 5730871099180204512, guid: c207ee7be0666814584e25401cf34878,
+    type: 3}
   levelGoals:
   - goalType: 0
     description: 

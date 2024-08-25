@@ -27,7 +27,7 @@ public class Hole
         }
     }
 
-    public static (Hole, GameObject) CreateHoleAndObjectFromData(HoleData holeData, GameObject holeCellPrefab)
+    public static (Hole, GameObject) CreateHoleAndObjectFromData(HoleData holeData)
     {
         Hole newHole = new Hole(holeData);
 
@@ -37,38 +37,12 @@ public class Hole
         {
             if (cell.CellContentType != GameStats.CellContentTypes.Empty)
             {
-                GameObject holeCellObject = Object.Instantiate(holeCellPrefab);
+                GameObject holeCellObject = Object.Instantiate(LevelSelectorController.Instance.SelectedLevelData.CellObjectPrefab(cell.CellContentType));
 
                 cell.HoleCellObject = holeCellObject;
 
                 holeCellObject.transform.SetParent(newHoleObject.transform);
                 holeCellObject.transform.localPosition = new Vector3(cell.Position.x, cell.Position.y, 0f);
-
-                // TODO; don't change materials like this
-                switch (cell.CellContentType)
-                {
-                    case GameStats.CellContentTypes.RedCell:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.red;
-                        break;
-                    case GameStats.CellContentTypes.GreenCell:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.green;
-                        break;
-                    case GameStats.CellContentTypes.BlueCell:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.blue;
-                        break;
-                    case GameStats.CellContentTypes.YellowCell:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.yellow;
-                        break;
-                    case GameStats.CellContentTypes.WhiteCell:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.white;
-                        break;
-                    case GameStats.CellContentTypes.BlackCell:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.black;
-                        break;
-                    default:
-                        holeCellObject.GetComponent<Renderer>().material.color = Color.gray;
-                        break;
-                }
 
                 if (holeData.CellEntityLayout[newHole.HoleLayout.IndexOf(cell)] != null)
                 {

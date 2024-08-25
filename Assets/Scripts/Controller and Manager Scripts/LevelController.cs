@@ -8,7 +8,6 @@ public class LevelController : MonoBehaviour
 
     [SerializeField] private GameObject cropControllerPrefab;
     [SerializeField] private GameObject tickManagerPrefab;
-    [SerializeField] private GameObject cellObjectPrefab;
     [SerializeField] private GameObject levelGridPrefab;
     [SerializeField] private GameObject fogPlanePrefab;
 
@@ -418,7 +417,7 @@ public class LevelController : MonoBehaviour
 
     private IEnumerator SetHole()
     {
-        (Hole newHole, GameObject newHoleObject) = Hole.CreateHoleAndObjectFromData(LevelSelectorController.Instance.SelectedHoleData, cellObjectPrefab);
+        (Hole newHole, GameObject newHoleObject) = Hole.CreateHoleAndObjectFromData(LevelSelectorController.Instance.SelectedHoleData);
 
         newHole.HoleObject = newHoleObject;
 
@@ -441,7 +440,7 @@ public class LevelController : MonoBehaviour
     {
         foreach (ShapeData data in LevelSelectorController.Instance.SelectedShapeData)
         {
-            (Shape newShape, GameObject newShapeObject) = Shape.CreateShapeAndObjectFromData(data, cellObjectPrefab);
+            (Shape newShape, GameObject newShapeObject) = Shape.CreateShapeAndObjectFromData(data);
 
             newShape.ShapeObject = newShapeObject;
 
