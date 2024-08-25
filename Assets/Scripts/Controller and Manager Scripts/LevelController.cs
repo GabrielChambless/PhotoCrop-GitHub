@@ -67,12 +67,12 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !IsSettingUpLevel)
         {
             currentAnglePreference = CameraController.CameraAngles.Angle1;
             CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle1);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && !IsSettingUpLevel)
         {
             currentAnglePreference = CameraController.CameraAngles.Angle2;
             CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle2);
@@ -173,10 +173,10 @@ public class LevelController : MonoBehaviour
             CropController.Instance.ToggleCropController();
             CropController.Instance.transform.position = currentShapeObject.transform.position - (Vector3.forward * 0.51f);
 
-            if (currentAnglePreference != CameraController.CameraAngles.Angle2)
-            {
+            //if (currentAnglePreference != CameraController.CameraAngles.Angle2)
+            //{
                 StartCoroutine(WaitToMoveCameraForCroppingPlaceShape());
-            }
+            //}
 
             if (availableShapeObjects.Count == 0 || Hole.GridIsCompletelyFilled(CurrentHole))
             {
@@ -483,7 +483,14 @@ public class LevelController : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle1);
+        if (currentAnglePreference == CameraController.CameraAngles.Angle1)
+        {
+            CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle1);
+        }
+        else
+        {
+            CameraController.Instance.MoveToCameraAngle(CameraController.CameraAngles.Angle2);
+        }
 
         inCoroutine = false;
     }

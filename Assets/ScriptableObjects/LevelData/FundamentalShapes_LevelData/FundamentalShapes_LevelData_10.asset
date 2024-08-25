@@ -23,7 +23,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 67e08d0ca13fa554dbc891d37be7434c, type: 2}
   - {fileID: 11400000, guid: e1cf58939db8e8b4baa785fa4077ed06, type: 2}
   - {fileID: 11400000, guid: 0299581e682625d4bac377bad1c3345f, type: 2}
-  wallCellPrefab: {fileID: 5730871099180204512, guid: 3fc087bb1f5f13348b9613ccdedccb9a,
+  wallCellPrefab: {fileID: 3237237692395054987, guid: 9afa41096c798fa408830177d6e9469a,
     type: 3}
   redCellPrefab: {fileID: 5730871099180204512, guid: 2bc9285f4a8e13841a1510172d6c0059,
     type: 3}

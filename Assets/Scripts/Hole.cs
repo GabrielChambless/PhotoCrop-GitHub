@@ -42,7 +42,20 @@ public class Hole
                 cell.HoleCellObject = holeCellObject;
 
                 holeCellObject.transform.SetParent(newHoleObject.transform);
-                holeCellObject.transform.localPosition = new Vector3(cell.Position.x, cell.Position.y, 0f);
+
+                float worldTypeOffsetZ = 0f;
+
+                switch (LevelSelectorController.Instance.SelectedLevelData.World)
+                {
+                    case LevelData.WorldType.FundamentalShapes:
+                        worldTypeOffsetZ = 0.5f;
+                        break;
+                    case LevelData.WorldType.Chess:
+                        worldTypeOffsetZ = 0f;
+                        break;
+                }
+
+                holeCellObject.transform.localPosition = new Vector3(cell.Position.x, cell.Position.y, worldTypeOffsetZ);
 
                 if (holeData.CellEntityLayout[newHole.HoleLayout.IndexOf(cell)] != null)
                 {

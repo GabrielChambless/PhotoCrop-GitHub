@@ -42,6 +42,7 @@ public class Shape
             };
 
             newCell.ShapeCellObject = originalCell.ShapeCellObject;
+            newCell.CellEntities = originalCell.CellEntities;
 
             ShapeLayout.Add(newCell);  
         }
@@ -63,7 +64,20 @@ public class Shape
                 cell.ShapeCellObject = shapeCellObject;
 
                 shapeCellObject.transform.SetParent(newShapeObject.transform);
-                shapeCellObject.transform.localPosition = new Vector3(cell.Position.x, cell.Position.y, 0f);
+
+                float worldTypeOffsetZ = 0f;
+
+                switch (LevelSelectorController.Instance.SelectedLevelData.World)
+                {
+                    case LevelData.WorldType.FundamentalShapes:
+                        worldTypeOffsetZ = 0.5f;
+                        break;
+                    case LevelData.WorldType.Chess:
+                        worldTypeOffsetZ = 0f;
+                        break;
+                }
+
+                shapeCellObject.transform.localPosition = new Vector3(cell.Position.x, cell.Position.y, worldTypeOffsetZ);
 
                 if (shapeData.CellEntityLayout[newShape.ShapeLayout.IndexOf(cell)] != null)
                 {
