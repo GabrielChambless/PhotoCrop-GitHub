@@ -382,7 +382,7 @@ public class LevelController : MonoBehaviour
                 zPosition = 0f;
                 break;
             case LevelData.WorldType.Chess:
-                zPosition = 0.26f;
+                zPosition = 0.85f;
                 break;
         }
 
@@ -408,10 +408,10 @@ public class LevelController : MonoBehaviour
                 float xOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.x % 2 == 0 ? 0.5f : 0f;
                 float yOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.y % 2 == 0 ? 0.5f : 0f;
                 levelBoardObject.transform.GetChild(0).position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.GetChild(0).position.z);
-                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 2.5f, 0.1f, this));
+                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 2.5f, 0.1f, 15f, this));
                 break;
             case LevelData.WorldType.Chess:
-                yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 5.5f, 0.1f, this));
+                yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 2.5f, 0.1f, -15f, this));
                 break;
         }
     }

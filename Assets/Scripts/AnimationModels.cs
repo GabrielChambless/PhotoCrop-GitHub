@@ -303,7 +303,7 @@ public static class AnimationModels
         }
     }
 
-    public static IEnumerator SetFundamentalShapesBoard(GameObject board, float boardDuration, float childrenDuration, float bounceDuration, MonoBehaviour monoBehaviourInstance)
+    public static IEnumerator SetFundamentalShapesBoard(GameObject board, float boardDuration, float childrenDuration, float bounceDuration, float boardOffset, MonoBehaviour monoBehaviourInstance)
     {
         Vector3 offset = Vector3.forward * 15f;
 
@@ -341,12 +341,12 @@ public static class AnimationModels
         }
 
         monoBehaviourInstance.StartCoroutine(BounceEffect(board.transform.GetChild(0), endPosition, bounceDuration, bounceOffset));
-        monoBehaviourInstance.StartCoroutine(SetBoardAndChildren(board, childrenDuration, bounceDuration, monoBehaviourInstance, true));
+        monoBehaviourInstance.StartCoroutine(SetBoardAndChildren(board, childrenDuration, bounceDuration, boardOffset, monoBehaviourInstance, true));
     }
 
-    public static IEnumerator SetBoardAndChildren(GameObject boardWithChildren, float duration, float bounceDuration, MonoBehaviour monoBehaviourInstance, bool excludeFirstChild = false)
+    public static IEnumerator SetBoardAndChildren(GameObject boardWithChildren, float duration, float bounceDuration, float boardOffset, MonoBehaviour monoBehaviourInstance, bool excludeFirstChild = false)
     {
-        Vector3 offset = Vector3.forward * -15f;
+        Vector3 offset = Vector3.forward * boardOffset;
 
         if (!excludeFirstChild)
         {
@@ -396,7 +396,7 @@ public static class AnimationModels
 
             monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration, bounceOffset));
 
-            if (i == 0)
+            if (i == 0 && !excludeFirstChild)
             {
                 for (int k = 0; k < child.transform.childCount; k++)
                 {

@@ -90,6 +90,17 @@ public class Shape
                         shapeCellObject.GetComponent<Renderer>().material.color = Color.gray;
                         break;
                 }
+
+                if (shapeData.CellEntityLayout[newShape.ShapeLayout.IndexOf(cell)] != null)
+                {
+                    int indexOfCellEntity = newShape.ShapeLayout.IndexOf(cell);
+
+                    CellEntity cellEntity = new CellEntity(shapeData.CellEntityLayout[indexOfCellEntity]);
+                    cellEntity.EntityObject = Object.Instantiate(shapeData.CellEntityLayout[indexOfCellEntity].EntityObject);
+                    cellEntity.EntityObject.transform.SetParent(cell.ShapeCellObject.transform);
+                    cellEntity.EntityObject.transform.position = shapeCellObject.transform.position - (Vector3.forward / 2);
+                    cell.CellEntities.Add(cellEntity);
+                }
             }
         }
 
@@ -133,7 +144,8 @@ public class Shape
                 {
                     Position = newPos,
                     IsFilled = cell.IsFilled,
-                    CellContentType = cell.CellContentType
+                    CellContentType = cell.CellContentType,
+                    CellEntities = cell.CellEntities
                 };
 
                 if (cell.ShapeCellObject != null)
@@ -188,6 +200,21 @@ public class Shape
             // Update the hole layout
             hole.HoleLayout[holeIndex].CellContentType = shapeCell.CellContentType;
             hole.HoleLayout[holeIndex].IsFilled = true;
+
+            for (int i = shapeCell.CellEntities.Count - 1; i >= 0; i--)
+            {
+                shapeCell.CellEntities[i].Position = hole.HoleLayout[holeIndex].Position;
+                hole.HoleLayout[holeIndex].CellEntities.Add(shapeCell.CellEntities[i]);
+
+                if (LevelController.Instance != null)
+                {
+                    Debug.Log("cell entities count: " + LevelController.Instance.CellEntities.Count);
+                    LevelController.Instance.AddToCellEntities(shapeCell.CellEntities[i]);
+                    Debug.Log("cell entities count: " + LevelController.Instance.CellEntities.Count);
+                }
+
+                shapeCell.CellEntities.RemoveAt(i);
+            }
         }
 
         return true;

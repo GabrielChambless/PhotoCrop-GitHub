@@ -340,6 +340,7 @@ public static class TickActionModels
                             if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k] != cellEntity && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].CanBeRemovedByOtherEntities)
                             {
                                 LevelController.Instance.StartCoroutine(AnimationModels.TossInDirection(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
+                                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject.transform.SetParent(LevelController.Instance.CurrentHole.HoleObject.transform);
                                 LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                                 LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                             }
@@ -403,6 +404,7 @@ public static class TickActionModels
                             if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k] != cellEntity && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].CanBeRemovedByOtherEntities)
                             {
                                 LevelController.Instance.StartCoroutine(AnimationModels.TossInDirection(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
+                                LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject.transform.SetParent(LevelController.Instance.CurrentHole.HoleObject.transform);
                                 LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                                 LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                             }
@@ -486,6 +488,7 @@ public static class TickActionModels
                     if (LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k] != cellEntity && LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].CanBeRemovedByOtherEntities)
                     {
                         LevelController.Instance.StartCoroutine(AnimationModels.TossInDirection(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject, GetDirection(previousPosition, cellEntity.Position)));
+                        LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k].EntityObject.transform.SetParent(LevelController.Instance.CurrentHole.HoleObject.transform);
                         LevelController.Instance.CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                         LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities.Remove(LevelController.Instance.CurrentHole.HoleLayout[cellIndex].CellEntities[k]);
                     }

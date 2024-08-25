@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
        
         if (LevelSelectorController.Instance != null && LevelSelectorController.Instance.SelectedHoleData != null)
         {
-            targetPosition = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1) / 2f, 0f)
+            targetPosition = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1.5f) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1f) / 2f, 0f)
                 + transform.forward * -9;
 
             CameraPosition1 = targetPosition;
@@ -56,7 +56,7 @@ public class CameraController : MonoBehaviour
             Quaternion rotationQuaternion = Quaternion.Euler(CameraRotation2);
             Vector3 forwardDirection = rotationQuaternion * Vector3.forward;
 
-            CameraPosition2 = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1) / 2f, 0f)
+            CameraPosition2 = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x - 1f) / 2f, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y - 1f) / 2f, 0f)
                 + forwardDirection * -9f;
         }
 

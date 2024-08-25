@@ -7,6 +7,7 @@ public class ShapeData : ScriptableObject
 {
     [SerializeField] private Vector2Int dimensions = new Vector2Int(3, 3);
     [SerializeField] private List<ShapeCell> shapeLayout = new List<ShapeCell>();
+    [SerializeField] private List<CellEntityData> cellEntityLayout = new List<CellEntityData>();
 
     public Vector2Int Dimensions
     {
@@ -18,6 +19,7 @@ public class ShapeData : ScriptableObject
     }
 
     public List<ShapeCell> ShapeLayout => shapeLayout;
+    public List<CellEntityData> CellEntityLayout => cellEntityLayout;
 
     private void OnValidate()
     {

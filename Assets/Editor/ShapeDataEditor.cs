@@ -7,15 +7,22 @@ public class ShapeDataEditor : Editor
     private ShapeData shapeData;
     private SerializedProperty dimensions;
     private SerializedProperty shapeLayout;
+    private SerializedProperty cellEntityLayout;
 
+    private bool showHoleLayout = true;
+    private bool showCellEntityLayout = false;
     private bool showConfirmation = false;
     private Color defaultColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+    private float buttonSize;
+    int centerX;
+    int centerY;
 
     private void OnEnable()
     {
         shapeData = (ShapeData)target;
         dimensions = serializedObject.FindProperty("dimensions");
         shapeLayout = serializedObject.FindProperty("shapeLayout");
+        cellEntityLayout = serializedObject.FindProperty("cellEntityLayout");
     }
 
     public override void OnInspectorGUI()
@@ -23,22 +30,32 @@ public class ShapeDataEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(dimensions);
+        EditorGUILayout.Space(10);
+
         Vector2Int grid = dimensions.vector2IntValue;
 
         // Ensure shapeLayout is appropriately sized
         while (shapeLayout.arraySize < grid.x * grid.y)
         {
             shapeLayout.InsertArrayElementAtIndex(shapeLayout.arraySize);
-            ResetCell(shapeLayout.GetArrayElementAtIndex(shapeLayout.arraySize - 1), grid);
+            //ResetCell(shapeLayout.GetArrayElementAtIndex(shapeLayout.arraySize - 1), grid);
+        }
+
+        // Ensure cellEntityLayout is appropriately sized
+        while (cellEntityLayout.arraySize < grid.x * grid.y)
+        {
+            cellEntityLayout.InsertArrayElementAtIndex(cellEntityLayout.arraySize);
         }
 
         // Update the inspector based on grid size
-        int width = (int)grid.x;
-        int height = (int)grid.y;
-        int centerX = grid.x / 2;
-        int centerY = grid.y / 2;
+        int width = grid.x;
+        int height = grid.y;
+        centerX = grid.x / 2;
+        centerY = grid.y / 2;
+
         float inspectorWidth = EditorGUIUtility.currentViewWidth;
-        float buttonSize = Mathf.Min(50, (inspectorWidth - (grid.x * 4)) / grid.x); // Buffer for margins
+        int buttonsPerRow = width;
+        buttonSize = Mathf.Min(50, (inspectorWidth - (buttonsPerRow * 4)) / buttonsPerRow); // 4 is a buffer for margins
 
         for (int y = height - 1; y >= 0; y--)
         {
@@ -88,6 +105,15 @@ public class ShapeDataEditor : Editor
 
         EditorGUILayout.Space(10);
 
+        // Toggle for Cell Entity Layout
+        showCellEntityLayout = EditorGUILayout.Foldout(showCellEntityLayout, "Cell Entity Layout");
+        if (showCellEntityLayout)
+        {
+            DisplayGrid(cellEntityLayout, width, height, buttonSize, DrawCellEntityButton);
+        }
+
+        EditorGUILayout.Space(10);
+
         // Confirmation for clearing grid
         if (GUILayout.Button("Clear Grid"))
         {
@@ -101,6 +127,7 @@ public class ShapeDataEditor : Editor
             if (GUILayout.Button("Confirm Clear"))
             {
                 shapeLayout.ClearArray();
+                cellEntityLayout.ClearArray();
                 showConfirmation = false;
                 EditorUtility.SetDirty(target);
             }
@@ -114,6 +141,45 @@ public class ShapeDataEditor : Editor
         }
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private void DisplayGrid(SerializedProperty layout, int width, int height, float buttonSize, System.Action<SerializedProperty, int> drawButton)
+    {
+        for (int y = height - 1; y >= 0; y--)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            for (int x = 0; x < width; x++)
+            {
+                int index = y * width + x;
+
+                if (index < layout.arraySize) // Ensure the index is within bounds
+                {
+                    SerializedProperty cell = layout.GetArrayElementAtIndex(index);
+                    drawButton(cell, index);
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    private void DrawCellEntityButton(SerializedProperty cell, int index)
+    {
+        string label = cell.objectReferenceValue != null ? cell.objectReferenceValue.name : "Empty";
+
+        Color buttonColor = cell.objectReferenceValue != null ? Color.green : defaultColor;
+        GUIStyle style = CreateDynamicTextStyle(buttonSize, buttonColor);
+
+        if (GUILayout.Button(label, style, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
+        {
+            EditorGUIUtility.ShowObjectPicker<CellEntityData>(null, false, "", index);
+        }
+
+        if (Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == index)
+        {
+            cell.objectReferenceValue = EditorGUIUtility.GetObjectPickerObject() as CellEntityData;
+        }
     }
 
     private void ResetCell(SerializedProperty cell, Vector2Int grid)
@@ -132,6 +198,9 @@ public class ShapeDataEditor : Editor
         cell.FindPropertyRelative("CellContentType").enumValueIndex = (int)GameStats.CellContentTypes.Empty;  // Default to Empty
         cell.FindPropertyRelative("IsFilled").boolValue = false;  // Not filled by default
     }
+
+
+
 
 
     private GUIStyle CreateDynamicTextStyle(float buttonSize, Color backgroundColor)

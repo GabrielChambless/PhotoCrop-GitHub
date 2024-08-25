@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,5 +8,5 @@ public class ShapeCell
     public Vector2Int Position;
     public bool IsFilled;
     public GameStats.CellContentTypes CellContentType = GameStats.CellContentTypes.Empty;
-    public CellEntity CellEntity;
+    public List<CellEntity> CellEntities = new List<CellEntity>();
 }

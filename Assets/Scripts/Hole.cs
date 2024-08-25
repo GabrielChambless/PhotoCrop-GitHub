@@ -59,6 +59,12 @@ public class Hole
                     case GameStats.CellContentTypes.YellowCell:
                         holeCellObject.GetComponent<Renderer>().material.color = Color.yellow;
                         break;
+                    case GameStats.CellContentTypes.WhiteCell:
+                        holeCellObject.GetComponent<Renderer>().material.color = Color.white;
+                        break;
+                    case GameStats.CellContentTypes.BlackCell:
+                        holeCellObject.GetComponent<Renderer>().material.color = Color.black;
+                        break;
                     default:
                         holeCellObject.GetComponent<Renderer>().material.color = Color.gray;
                         break;

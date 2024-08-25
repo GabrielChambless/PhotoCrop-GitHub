@@ -131,6 +131,11 @@ public class ShapeSelectionController : MonoBehaviour
 
             GameObject shapeDouble = Instantiate(shape.ShapeObject);
 
+            for (int k = 0; k < shapeDouble.transform.childCount; k++)
+            {
+                shapeDouble.transform.GetChild(k).GetComponent<MeshRenderer>().shadowCastingMode = 0;
+            }
+
             shapeDouble.transform.SetParent(photo.transform);
             shapeDouble.transform.localPosition = new Vector3(0f, 0.1f, 0f);
             shapeDouble.transform.localEulerAngles = new Vector3(0f, 0f, shape.ShapeObject.transform.eulerAngles.z);
