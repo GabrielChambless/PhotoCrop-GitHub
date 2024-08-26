@@ -175,7 +175,7 @@ public class LevelController : MonoBehaviour
 
             //if (currentAnglePreference != CameraController.CameraAngles.Angle2)
             //{
-                StartCoroutine(WaitToMoveCameraForCroppingPlaceShape());
+            StartCoroutine(WaitToMoveCameraForCroppingPlaceShape());
             //}
 
             if (availableShapeObjects.Count == 0 || Hole.GridIsCompletelyFilled(CurrentHole))
@@ -239,6 +239,11 @@ public class LevelController : MonoBehaviour
         if (IsSettingUpLevel)
         {
             return;
+        }
+
+        if (TickManager.Instance.TickCoroutine != null)
+        {
+            TickManager.Instance.StopTicking();
         }
 
         if (currentShapeObject != null)
@@ -403,7 +408,7 @@ public class LevelController : MonoBehaviour
         switch (LevelSelectorController.Instance.SelectedLevelData.World)
         {
             case LevelData.WorldType.Bricks:
-                levelBoardObject.transform.GetChild(0).localScale = new Vector3(LevelSelectorController.Instance.SelectedHoleData.GridSize.x, LevelSelectorController.Instance.SelectedHoleData.GridSize.y, levelBoardObject.transform.GetChild(0).transform.localScale.z);
+                //levelBoardObject.transform.GetChild(0).localScale = new Vector3(LevelSelectorController.Instance.SelectedHoleData.GridSize.x, LevelSelectorController.Instance.SelectedHoleData.GridSize.y, levelBoardObject.transform.GetChild(0).transform.localScale.z);
                 float xOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.x % 2 == 0 ? 0.5f : 0f;
                 float yOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.y % 2 == 0 ? 0.5f : 0f;
                 levelBoardObject.transform.GetChild(0).position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.GetChild(0).position.z);
@@ -523,7 +528,15 @@ public class LevelController : MonoBehaviour
             yield return null;
         }
 
-        AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+        switch (LevelSelectorController.Instance.SelectedLevelData.World)
+        {
+            case LevelData.WorldType.Bricks:
+                AudioController.Instance.PlaySFX(AudioController.Instance.RandomBrickClick().Name);
+                break;
+            case LevelData.WorldType.Chess:
+                AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.DefaultShapePlace);
+                break;
+        }
 
         Vector3 overshootPos = targetPos + Vector3.forward * placeBounceIntensity;  // Modify this to control depth of overshoot
 

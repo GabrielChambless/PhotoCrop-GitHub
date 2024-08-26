@@ -7,13 +7,24 @@ public class AudioClipLibrary : ScriptableObject
 {
     public enum AudioClipNames
     {
-        BackgroundMusic,
-        PlaceShape
+        TitleMusic,
+        DefaultShapePlace,
+        BrickClick1,
+        BrickClick2,
+        BrickClick3
+    }
+
+    public enum AudioTypes
+    {
+        Music,
+        SFX,
+        Voice
     }
 
     [System.Serializable]
     public struct AudioClipData
     {
+        public AudioTypes AudioType;
         public AudioClipNames Name;
         public AudioClip Clip;
     }

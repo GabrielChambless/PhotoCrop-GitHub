@@ -196,9 +196,7 @@ public class Shape
 
                 if (LevelController.Instance != null)
                 {
-                    Debug.Log("cell entities count: " + LevelController.Instance.CellEntities.Count);
                     LevelController.Instance.AddToCellEntities(shapeCell.CellEntities[i]);
-                    Debug.Log("cell entities count: " + LevelController.Instance.CellEntities.Count);
                 }
 
                 shapeCell.CellEntities.RemoveAt(i);

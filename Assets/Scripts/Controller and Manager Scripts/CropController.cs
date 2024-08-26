@@ -239,7 +239,19 @@ public class CropController : MonoBehaviour
 
             if (Shape.CanPlaceShape(currentHole, newShape, new Vector2Int((int)shape.ShapeObject.transform.position.x, (int)shape.ShapeObject.transform.position.y)))
             {
-                Vector3 targetPosition = new Vector3(newShapeObject.transform.position.x, newShapeObject.transform.position.y, 0f);
+                float worldTypeOffsetZ = 0f;
+
+                switch (LevelSelectorController.Instance.SelectedLevelData.World)
+                {
+                    case LevelData.WorldType.Bricks:
+                        worldTypeOffsetZ = 0.5f;
+                        break;
+                    case LevelData.WorldType.Chess:
+                        worldTypeOffsetZ = 0f;
+                        break;
+                }
+
+                Vector3 targetPosition = new Vector3(newShapeObject.transform.position.x, newShapeObject.transform.position.y, worldTypeOffsetZ);
 
                 ShapeSelectionController.Instance.UpdateShapeInPhoto(shape);
 
@@ -731,6 +743,16 @@ public class CropController : MonoBehaviour
             objectTransform.position = Vector3.Lerp(objectTransform.position, overshootPos, bounceTime);
             bounceTime += placeSpeed;  // Adjust the rate of the bounce effect
             yield return null;
+        }
+
+        switch (LevelSelectorController.Instance.SelectedLevelData.World)
+        {
+            case LevelData.WorldType.Bricks:
+                AudioController.Instance.PlaySFX(AudioController.Instance.RandomBrickClick().Name);
+                break;
+            case LevelData.WorldType.Chess:
+                AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.DefaultShapePlace);
+                break;
         }
 
         // Snap back to the target position

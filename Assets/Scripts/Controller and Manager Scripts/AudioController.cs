@@ -36,7 +36,7 @@ public class AudioController : MonoBehaviour
             }
         }
 
-        PlayMusic(AudioClipLibrary.AudioClipNames.BackgroundMusic, true);
+        PlayMusic(AudioClipLibrary.AudioClipNames.TitleMusic, true);
     }
 
     public void PlayMusic(AudioClipLibrary.AudioClipNames clipName, bool shouldLoop)
@@ -77,5 +77,35 @@ public class AudioController : MonoBehaviour
         }
 
         Debug.LogWarning($"SFX clip '{clipName}' not found!");
+    }
+
+    public AudioClipLibrary.AudioClipData RandomMusic()
+    {
+        List<AudioClipLibrary.AudioClipData> allMusicAudio = new List<AudioClipLibrary.AudioClipData>();
+
+        foreach (AudioClipLibrary.AudioClipData audioClipData in audioClipLibrary.AudioClips)
+        {
+            if (audioClipData.AudioType == AudioClipLibrary.AudioTypes.Music)
+            {
+                allMusicAudio.Add(audioClipData);
+            }
+        }
+
+        return allMusicAudio[Random.Range(0, allMusicAudio.Count)];
+    }
+
+    public AudioClipLibrary.AudioClipData RandomBrickClick()
+    {
+        List<AudioClipLibrary.AudioClipData> allBrickClickAudio = new List<AudioClipLibrary.AudioClipData>();
+
+        foreach (AudioClipLibrary.AudioClipData audioClipData in audioClipLibrary.AudioClips)
+        {
+            if (audioClipData.Name.ToString().StartsWith("BrickClick"))
+            {
+                allBrickClickAudio.Add(audioClipData);
+            }
+        }
+
+        return allBrickClickAudio[Random.Range(0, allBrickClickAudio.Count)];
     }
 }

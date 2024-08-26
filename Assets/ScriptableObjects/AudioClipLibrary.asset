@@ -13,7 +13,18 @@ MonoBehaviour:
   m_Name: AudioClipLibrary
   m_EditorClassIdentifier: 
   audioClips:
-  - Name: 0
+  - AudioType: 0
+    Name: 0
     Clip: {fileID: 8300000, guid: 73dbd41a76770f6468f726dad3679bee, type: 3}
-  - Name: 1
+  - AudioType: 1
+    Name: 1
     Clip: {fileID: 8300000, guid: 3031989cb3dfb8448b43eb16c92cd1fd, type: 3}
+  - AudioType: 1
+    Name: 2
+    Clip: {fileID: 8300000, guid: 8aecf5a00a958fb4cb1254189c6607cd, type: 3}
+  - AudioType: 1
+    Name: 3
+    Clip: {fileID: 8300000, guid: 219584617b8867f47be2e3001bdf9ca9, type: 3}
+  - AudioType: 1
+    Name: 4
+    Clip: {fileID: 8300000, guid: e447e6ecb34d6a141a0b8c59a3cb9afa, type: 3}

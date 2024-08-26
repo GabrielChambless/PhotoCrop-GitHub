@@ -39,7 +39,15 @@ public static class AnimationModels
 
             if (AudioController.Instance != null)
             {
-                AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+                switch (LevelSelectorController.Instance.SelectedLevelData.World)
+                {
+                    case LevelData.WorldType.Bricks:
+                        AudioController.Instance.PlaySFX(AudioController.Instance.RandomBrickClick().Name);
+                        break;
+                    case LevelData.WorldType.Chess:
+                        AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.DefaultShapePlace);
+                        break;
+                }
             }
 
             monoBehaviourInstance.StartCoroutine(BounceEffect(child, endPosition, bounceDuration, bounceOffset));
@@ -69,7 +77,15 @@ public static class AnimationModels
 
             if (AudioController.Instance != null)
             {
-                AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+                switch (LevelSelectorController.Instance.SelectedLevelData.World)
+                {
+                    case LevelData.WorldType.Bricks:
+                        AudioController.Instance.PlaySFX(AudioController.Instance.RandomBrickClick().Name);
+                        break;
+                    case LevelData.WorldType.Chess:
+                        AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.DefaultShapePlace);
+                        break;
+                }
             }
 
             monoBehaviourInstance.StartCoroutine(BounceEffect(LevelController.Instance.CellEntities[i].EntityObject.transform, endPosition, bounceDuration, bounceOffset));
@@ -329,7 +345,15 @@ public static class AnimationModels
 
         if (AudioController.Instance != null)
         {
-            AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+            switch (LevelSelectorController.Instance.SelectedLevelData.World)
+            {
+                case LevelData.WorldType.Bricks:
+                    AudioController.Instance.PlaySFX(AudioController.Instance.RandomBrickClick().Name);
+                    break;
+                case LevelData.WorldType.Chess:
+                    AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.DefaultShapePlace);
+                    break;
+            }
         }
 
         for (int k = 0; k < board.transform.GetChild(0).childCount; k++)
@@ -383,7 +407,15 @@ public static class AnimationModels
 
             if (AudioController.Instance != null)
             {
-                AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.PlaceShape);
+                switch (LevelSelectorController.Instance.SelectedLevelData.World)
+                {
+                    case LevelData.WorldType.Bricks:
+                        AudioController.Instance.PlaySFX(AudioController.Instance.RandomBrickClick().Name);
+                        break;
+                    case LevelData.WorldType.Chess:
+                        AudioController.Instance.PlaySFX(AudioClipLibrary.AudioClipNames.DefaultShapePlace);
+                        break;
+                }
             }
 
             for (int k = 0; k < child.transform.childCount; k++)
