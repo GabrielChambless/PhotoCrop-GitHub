@@ -7,7 +7,7 @@ public class LevelData : ScriptableObject
 {
     public enum WorldType
     {
-        FundamentalShapes,
+        Bricks,
         Chess
     }
 

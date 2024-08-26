@@ -303,7 +303,7 @@ public static class AnimationModels
         }
     }
 
-    public static IEnumerator SetFundamentalShapesBoard(GameObject board, float boardDuration, float childrenDuration, float bounceDuration, float boardOffset, MonoBehaviour monoBehaviourInstance)
+    public static IEnumerator SetBricksBoard(GameObject board, float boardDuration, float childrenDuration, float bounceDuration, float boardOffset, MonoBehaviour monoBehaviourInstance)
     {
         Vector3 offset = Vector3.forward * 15f;
 

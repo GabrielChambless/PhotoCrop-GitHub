@@ -7,7 +7,7 @@ public class LevelDataLibrary : ScriptableObject
 {
     public static LevelDataLibrary Instance { get; set; }
 
-    [SerializeField] private List<LevelData> FundamentalShapesLevelData = new List<LevelData>();
+    [SerializeField] private List<LevelData> BricksLevelData = new List<LevelData>();
     [SerializeField] private List<LevelData> ChessLevelData = new List<LevelData>();
 
     public List<LevelGoal> GetCompletedLevelGoals(LevelData levelData)
@@ -31,8 +31,8 @@ public class LevelDataLibrary : ScriptableObject
 
         switch (world)
         {
-            case LevelData.WorldType.FundamentalShapes:
-                worldLevelData = FundamentalShapesLevelData;
+            case LevelData.WorldType.Bricks:
+                worldLevelData = BricksLevelData;
                 break;
             case LevelData.WorldType.Chess:
                 worldLevelData = ChessLevelData;

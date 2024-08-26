@@ -47,7 +47,7 @@ public class Hole
 
                 switch (LevelSelectorController.Instance.SelectedLevelData.World)
                 {
-                    case LevelData.WorldType.FundamentalShapes:
+                    case LevelData.WorldType.Bricks:
                         worldTypeOffsetZ = 0.5f;
                         break;
                     case LevelData.WorldType.Chess:

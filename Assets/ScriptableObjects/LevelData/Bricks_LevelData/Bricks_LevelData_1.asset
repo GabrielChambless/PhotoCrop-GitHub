@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae98c1bf50aae4348a61a915f3ac49c5, type: 3}
+  m_Name: Bricks_LevelData_1
+  m_EditorClassIdentifier: 
+  world: 0
+  worldLevelNumber: 1
+  levelBoardObject: {fileID: 8094515671406979978, guid: 1be677029ad4abe4ca3eeb88610b6e65,
+    type: 3}
+  holeData: {fileID: 11400000, guid: cacbbb77f9fc20d409768f0498fd1a49, type: 2}
+  shapeDataList:
+  - {fileID: 11400000, guid: 009d712e3bd177043a6661e4d4beb2a8, type: 2}
+  - {fileID: 11400000, guid: d772c3a1b935b694690de12423516ba0, type: 2}
+  - {fileID: 11400000, guid: 9347a0faf3fa69844a1c2cd16fb67055, type: 2}
+  wallCellPrefab: {fileID: 6922860385821901989, guid: 7b1006f8367d278428933c4331d03333,
+    type: 3}
+  redCellPrefab: {fileID: 6922860385821901989, guid: 61078477ad959484786392bb302d37a4,
+    type: 3}
+  greenCellPrefab: {fileID: 6922860385821901989, guid: 79c0096d4b1ba454c96a9a2714299ccc,
+    type: 3}
+  blueCellPrefab: {fileID: 6922860385821901989, guid: efc250f681db0354db363d3ef76dfad0,
+    type: 3}
+  yellowCellPrefab: {fileID: 6922860385821901989, guid: 531478148fb53834394f806f1fc77626,
+    type: 3}
+  whiteCellPrefab: {fileID: 6922860385821901989, guid: 4963a0a3abfdcc940a94bdb9775a7153,
+    type: 3}
+  blackCellPrefab: {fileID: 6922860385821901989, guid: 1a77f659c7489bb4cb1670bba01f6732,
+    type: 3}
+  levelGoals:
+  - goalType: 0
+    description: 
+    isCompleted: 1
+    shapeLimit: 0
+    cropLimit: 0

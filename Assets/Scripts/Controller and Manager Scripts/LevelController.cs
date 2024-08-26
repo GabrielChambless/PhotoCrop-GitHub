@@ -377,7 +377,7 @@ public class LevelController : MonoBehaviour
 
         switch (worldType)
         {
-            case LevelData.WorldType.FundamentalShapes:
+            case LevelData.WorldType.Bricks:
                 zPosition = 0f;
                 break;
             case LevelData.WorldType.Chess:
@@ -402,12 +402,12 @@ public class LevelController : MonoBehaviour
 
         switch (LevelSelectorController.Instance.SelectedLevelData.World)
         {
-            case LevelData.WorldType.FundamentalShapes:
+            case LevelData.WorldType.Bricks:
                 levelBoardObject.transform.GetChild(0).localScale = new Vector3(LevelSelectorController.Instance.SelectedHoleData.GridSize.x, LevelSelectorController.Instance.SelectedHoleData.GridSize.y, levelBoardObject.transform.GetChild(0).transform.localScale.z);
                 float xOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.x % 2 == 0 ? 0.5f : 0f;
                 float yOffset = LevelSelectorController.Instance.SelectedHoleData.GridSize.y % 2 == 0 ? 0.5f : 0f;
                 levelBoardObject.transform.GetChild(0).position = new Vector3((LevelSelectorController.Instance.SelectedHoleData.GridSize.x / 2) - xOffset, (LevelSelectorController.Instance.SelectedHoleData.GridSize.y / 2) - yOffset, levelBoardObject.transform.GetChild(0).position.z);
-                yield return StartCoroutine(AnimationModels.SetFundamentalShapesBoard(levelBoardObject, 1f, 2.5f, 0.1f, 15f, this));
+                yield return StartCoroutine(AnimationModels.SetBricksBoard(levelBoardObject, 1f, 2.5f, 0.1f, 15f, this));
                 break;
             case LevelData.WorldType.Chess:
                 yield return StartCoroutine(AnimationModels.SetBoardAndChildren(levelBoardObject, 2.5f, 0.1f, -15f, this));
