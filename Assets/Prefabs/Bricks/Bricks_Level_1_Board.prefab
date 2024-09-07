@@ -19935,6 +19935,7 @@ GameObject:
   - component: {fileID: 4749338295833272348}
   - component: {fileID: 5397209088167948854}
   - component: {fileID: 6512925082133774828}
+  - component: {fileID: 800500479923756437}
   m_Layer: 0
   m_Name: Gray_Brick_2x2
   m_TagString: Untagged
@@ -20007,6 +20008,32 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &800500479923756437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6978830717531372502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cbb44fe11a97d148a90129a08c3576d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentAnimations: 020000000300000001000000
+  rotationAngle: {x: 0, y: 90, z: 0}
+  rotationSpeed: 1
+  rotationInterval: 0
+  rotationDurationIfInterval: 0.5
+  hoverStartOffset: 1
+  hoverRange: 0.5
+  hoverSpeed: 2
+  startColor: {r: 0.28782475, g: 0.33529383, b: 0.87169814, a: 1}
+  endColor: {r: 0, g: 0.87828064, b: 1, a: 1}
+  colorPulsateSpeed: 0.5
+  moveBackAndForthPosition: {x: 0, y: 0, z: 0}
+  moveBackAndForthSpeed: 2
+  StartAnimating: 0
 --- !u!1 &6997430425760270392
 GameObject:
   m_ObjectHideFlags: 0

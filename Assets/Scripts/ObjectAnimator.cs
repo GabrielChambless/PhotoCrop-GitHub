@@ -52,7 +52,7 @@ public class ObjectAnimator : MonoBehaviour
     void Start()
     {
         originalLocalPosition = transform.localPosition;
-        hoverStartPosition = originalLocalPosition + (Vector3.up * hoverStartOffset);
+        hoverStartPosition = originalLocalPosition + (Vector3.forward * -hoverStartOffset);
         objectRenderer = GetComponent<Renderer>();
     }
 
@@ -138,8 +138,8 @@ public class ObjectAnimator : MonoBehaviour
         }
 
         hoverTimer += Time.deltaTime * hoverSpeed;
-        float newY = hoverStartPosition.y + Mathf.Sin(hoverTimer) * hoverRange;
-        transform.localPosition = new Vector3(hoverStartPosition.x, newY, hoverStartPosition.z);
+        float newZ = hoverStartPosition.z + Mathf.Sin(hoverTimer) * hoverRange;
+        transform.localPosition = new Vector3(hoverStartPosition.x, hoverStartPosition.y, newZ);
     }
 
     private void ColorPulsate()
